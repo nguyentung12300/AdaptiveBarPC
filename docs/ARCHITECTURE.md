@@ -80,8 +80,12 @@ Executes profile-defined actions. It is the only app-level entry point for tap/l
 
 ### Audio providers
 
-`IAudioProvider` selects Windows Core Audio or VoiceMeeter. `WindowsAudioProvider`
-shares endpoint acquisition and release across its volume and mute operations.
+`AudioProviderFactory` selects Windows Core Audio or VoiceMeeter. The `auto`
+backend uses VoiceMeeter when its configured bus is reachable and otherwise falls
+back to Windows audio. Both providers retain volume and mute in memory when their
+backend is unavailable; Windows endpoint discovery is retried on each operation.
+`WindowsAudioProvider` releases COM endpoint objects after each operation and
+treats `E_NOTFOUND` as a normal endpoint-less state.
 Profile file changes are debounced with a one-shot timer; disposal prevents pending reloads.
 
 ### MonitorDockService

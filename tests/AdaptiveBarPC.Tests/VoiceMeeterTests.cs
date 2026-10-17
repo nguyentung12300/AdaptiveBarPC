@@ -29,6 +29,15 @@ public class VoiceMeeterTests
         // Immediate read must return 20% and not be overwritten with stale data
         Assert.Equal(20.0, provider.GetMasterVolumePercent());
 
+        if (!provider.IsAvailable)
+        {
+            // Machines without VoiceMeeter still retain both controls in memory.
+            var initialMute = provider.GetMute();
+            provider.ToggleMute();
+            Assert.Equal(!initialMute, provider.GetMute());
+            return;
+        }
+
         // Wait 300ms (window where GetParameterFloat could be stale)
         Thread.Sleep(300);
         Assert.Equal(20.0, provider.GetMasterVolumePercent());

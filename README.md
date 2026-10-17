@@ -3,11 +3,10 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
 ![Windows 10/11](https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows)
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/AdaptiveBarPC/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/YOUR_GITHUB_USERNAME/AdaptiveBarPC/actions/workflows/ci.yml)
+[![CI](https://github.com/nguyentung12300/AdaptiveBarPC/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nguyentung12300/AdaptiveBarPC/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-586%2F586%20passing-brightgreen)
 
-<!-- Replace this placeholder with a short product demo when one is ready. -->
-![AdaptiveBarPC Demo](docs/assets/demo.gif)
+![AdaptiveBarPC Studio preview](docs/assets/demo.png)
 
 AdaptiveBarPC is a contextual, non-activating control surface for a secondary touchscreen on Windows. It brings app-aware controls, media and audio tools, hardware sensors, and a visual profile designer into a slim horizontal bar.
 
@@ -24,7 +23,7 @@ AdaptiveBarPC is a contextual, non-activating control surface for a secondary to
 Requirements: Windows 10 or 11, .NET 8 SDK, and a touchscreen monitor for the full experience.
 
 ~~~powershell
-git clone https://github.com/YOUR_GITHUB_USERNAME/AdaptiveBarPC.git
+git clone https://github.com/nguyentung12300/AdaptiveBarPC.git
 cd AdaptiveBarPC
 dotnet restore AdaptiveBarPC.sln
 dotnet run --project src/AdaptiveBarPC.App/AdaptiveBarPC.App.csproj

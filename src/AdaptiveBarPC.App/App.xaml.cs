@@ -49,9 +49,7 @@ public partial class App : System.Windows.Application
         var profiles = new ProfileService(profilesDir, logger);
         _profileService = profiles;
 
-        IAudioProvider audio = config.AudioBackend.Equals("voicemeeter", StringComparison.OrdinalIgnoreCase)
-            ? new VoiceMeeterAudioProvider(config, logger)
-            : new WindowsAudioProvider();
+        IAudioProvider audio = AudioProviderFactory.Create(config, logger);
         _audioProvider = audio;
 
         _mediaSessionService = new MediaSessionService(logger);

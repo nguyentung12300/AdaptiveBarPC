@@ -19,8 +19,8 @@ public sealed class AppConfig
     public bool EnableSwipePages { get; set; } = true;
     public bool EnableAnimations { get; set; } = true;
 
-    // Audio backend configuration ("windows" | "voicemeeter")
-    public string AudioBackend { get; set; } = "windows";
+    // Audio backend configuration ("auto" | "windows" | "voicemeeter")
+    public string AudioBackend { get; set; } = "auto";
     public int VoiceMeeterBusIndex { get; set; } = 0;
 
     // Security: allow "launch" actions to open arbitrary targets from profile JSON.

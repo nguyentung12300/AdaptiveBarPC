@@ -12,7 +12,8 @@ public sealed class VoiceMeeterAudioProvider : IAudioProvider
     private readonly object _lock = new();
     private readonly System.Threading.Timer? _pollTimer;
 
-    private double _currentVolumePercent = 50.0;
+    private double _fallbackVolumePercent = 50.0;
+    private bool _fallbackMuted;
     private DateTimeOffset _lastWriteTime = DateTimeOffset.MinValue;
     private DateTimeOffset _lastPollTime = DateTimeOffset.MinValue;
     private bool _disposed;
@@ -29,26 +30,29 @@ public sealed class VoiceMeeterAudioProvider : IAudioProvider
         }
         else
         {
-            var res = _interop.Login();
-            if (res == 0)
-                _logger.Info($"Connected to VoiceMeeter (controlling Bus[{_busIndex}]).");
-            else if (res == 1)
-                _logger.Info($"Logged into VoiceMeeter API (VoiceMeeter GUI not currently open, controlling Bus[{_busIndex}]).");
-            else
-                _logger.Info($"VoiceMeeter login returned {res}.");
-
             try
             {
-                _interop.IsParametersDirty();
-                if (_interop.GetParameterFloat($"Bus[{_busIndex}].Gain", out var initialGainDb) == 0)
+                var res = _interop.Login();
+                if (res == 0)
+                    _logger.Info($"Connected to VoiceMeeter (controlling Bus[{_busIndex}]).");
+                else if (res == 1)
+                    _logger.Info($"Logged into VoiceMeeter API (VoiceMeeter GUI not currently open, controlling Bus[{_busIndex}]).");
+                else
+                    _logger.Info($"VoiceMeeter login returned {res}.");
+
+                if (res >= 0)
                 {
-                    _currentVolumePercent = GainDbToPercent(initialGainDb);
-                    _logger.Info($"Initial VoiceMeeter Bus[{_busIndex}].Gain: {initialGainDb:F2} dB ({_currentVolumePercent:F0}%)");
+                    _interop.IsParametersDirty();
+                    if (_interop.GetParameterFloat($"Bus[{_busIndex}].Gain", out var initialGainDb) == 0)
+                    {
+                        _fallbackVolumePercent = GainDbToPercent(initialGainDb);
+                        _logger.Info($"Initial VoiceMeeter Bus[{_busIndex}].Gain: {initialGainDb:F2} dB ({_fallbackVolumePercent:F0}%)");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed reading initial VoiceMeeter gain.", ex);
+                _logger.Warn($"VoiceMeeter is unavailable; using in-memory audio state. {ex.Message}");
             }
 
             _pollTimer = new System.Threading.Timer(OnPollTimer, null, 150, 150);
@@ -76,15 +80,15 @@ public sealed class VoiceMeeterAudioProvider : IAudioProvider
                     {
                         if ((now - _lastWriteTime).TotalMilliseconds < 1000)
                         {
-                            if (Math.Abs(remotePercent - _currentVolumePercent) < 1.0)
+                            if (Math.Abs(remotePercent - _fallbackVolumePercent) < 1.0)
                             {
                                 _lastWriteTime = DateTimeOffset.MinValue;
-                                _currentVolumePercent = remotePercent;
+                                _fallbackVolumePercent = remotePercent;
                             }
                         }
                         else
                         {
-                            _currentVolumePercent = remotePercent;
+                            _fallbackVolumePercent = remotePercent;
                         }
                     }
                 }
@@ -101,40 +105,71 @@ public sealed class VoiceMeeterAudioProvider : IAudioProvider
         if (_disposed || !_interop.IsLoaded)
             return false;
 
-        if (!_interop.IsLoggedIn)
+        try
         {
-            var res = _interop.Login();
-            return res == 0 || res == 1;
-        }
+            if (!_interop.IsLoggedIn)
+            {
+                var res = _interop.Login();
+                return res == 0 || res == 1;
+            }
 
-        return true;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Failed to connect to VoiceMeeter.", ex);
+            return false;
+        }
+    }
+
+    /// <summary>True only while the VoiceMeeter API can read the configured bus.</summary>
+    public bool IsAvailable
+    {
+        get
+        {
+            if (!EnsureConnected())
+                return false;
+
+            try
+            {
+                if (_interop.IsParametersDirty() < 0)
+                    return false;
+                return _interop.GetParameterFloat($"Bus[{_busIndex}].Gain", out _) == 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 
     public double GetMasterVolumePercent()
     {
         lock (_lock)
         {
-            return _currentVolumePercent;
+            return _fallbackVolumePercent;
         }
     }
 
     public void SetMasterVolumePercent(double percent)
     {
-        if (!EnsureConnected())
-            return;
-
         percent = Math.Clamp(percent, 0.0, 100.0);
         var targetDb = PercentToGainDb(percent);
 
         lock (_lock)
         {
-            _currentVolumePercent = percent;
+            _fallbackVolumePercent = percent;
             _lastWriteTime = DateTimeOffset.UtcNow;
         }
 
+        if (!EnsureConnected())
+            return;
+
         try
         {
-            _interop.SetParameterFloat($"Bus[{_busIndex}].Gain", targetDb);
+            var result = _interop.SetParameterFloat($"Bus[{_busIndex}].Gain", targetDb);
+            if (result != 0)
+                _logger.Warn($"VoiceMeeter rejected Bus[{_busIndex}].Gain update ({result}); keeping the requested value in memory.");
         }
         catch (Exception ex)
         {
@@ -145,20 +180,36 @@ public sealed class VoiceMeeterAudioProvider : IAudioProvider
     public void ToggleMute()
     {
         if (!EnsureConnected())
+        {
+            lock (_lock)
+                _fallbackMuted = !_fallbackMuted;
             return;
+        }
 
+        bool? requestedMute = null;
         try
         {
             _interop.IsParametersDirty();
             var res = _interop.GetParameterFloat($"Bus[{_busIndex}].Mute", out var muteVal);
             if (res == 0)
             {
-                var newMute = muteVal > 0.5f ? 0.0f : 1.0f;
-                _interop.SetParameterFloat($"Bus[{_busIndex}].Mute", newMute);
+                requestedMute = muteVal <= 0.5f;
+                lock (_lock)
+                    _fallbackMuted = requestedMute.Value;
+
+                var setResult = _interop.SetParameterFloat($"Bus[{_busIndex}].Mute", requestedMute.Value ? 1.0f : 0.0f);
+                if (setResult != 0)
+                    _logger.Warn($"VoiceMeeter rejected Bus[{_busIndex}].Mute update ({setResult}); keeping the requested state in memory.");
             }
+            else
+                ToggleFallbackMute();
         }
         catch (Exception ex)
         {
+            if (requestedMute.HasValue)
+                SetFallbackMute(requestedMute.Value);
+            else
+                ToggleFallbackMute();
             _logger.Error($"Failed to toggle VoiceMeeter Bus[{_busIndex}].Mute", ex);
         }
     }
@@ -166,19 +217,43 @@ public sealed class VoiceMeeterAudioProvider : IAudioProvider
     public bool GetMute()
     {
         if (!EnsureConnected())
-            return false;
+            return ReadFallbackMute();
 
         try
         {
             _interop.IsParametersDirty();
             var res = _interop.GetParameterFloat($"Bus[{_busIndex}].Mute", out var muteVal);
-            return res == 0 && muteVal > 0.5f;
+            if (res != 0)
+                return ReadFallbackMute();
+
+            var muted = muteVal > 0.5f;
+            lock (_lock)
+                _fallbackMuted = muted;
+            return muted;
         }
         catch (Exception ex)
         {
             _logger.Error($"Failed to read VoiceMeeter Bus[{_busIndex}].Mute", ex);
-            return false;
+            return ReadFallbackMute();
         }
+    }
+
+    private void ToggleFallbackMute()
+    {
+        lock (_lock)
+            _fallbackMuted = !_fallbackMuted;
+    }
+
+    private void SetFallbackMute(bool muted)
+    {
+        lock (_lock)
+            _fallbackMuted = muted;
+    }
+
+    private bool ReadFallbackMute()
+    {
+        lock (_lock)
+            return _fallbackMuted;
     }
 
     private static double GainDbToPercent(float gainDb)
