@@ -55,6 +55,21 @@ jobs:
             Copy-Item -Path (Join-Path $profilesSource '*') -Destination $profilesOutput -Recurse -Force
           }
 
+          $assetsOutput = Join-Path $appOutput 'Assets'
+          $profileFiles = @(Get-ChildItem -Path $profilesOutput -Filter '*.json' -File -Recurse)
+          if (-not (Test-Path (Join-Path $appOutput 'AdaptiveBarPC.exe'))) {
+            throw 'The published touch bar executable is missing.'
+          }
+          if (-not (Test-Path (Join-Path $designerOutput 'AdaptiveBarPC.Designer.exe'))) {
+            throw 'The published AdaptiveBar Studio executable is missing.'
+          }
+          if (-not (Test-Path $assetsOutput) -or @(Get-ChildItem -Path $assetsOutput -File -Recurse).Count -eq 0) {
+            throw 'The published application assets are missing.'
+          }
+          if ($profileFiles.Count -eq 0) {
+            throw 'No sample profile JSON files were included in the package.'
+          }
+
           Copy-Item -Path @('LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md') -Destination $stage -Force
           $archive = Join-Path $artifactDirectory "AdaptiveBarPC-$tag-win-x64.zip"
           Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $archive -CompressionLevel Optimal -Force
