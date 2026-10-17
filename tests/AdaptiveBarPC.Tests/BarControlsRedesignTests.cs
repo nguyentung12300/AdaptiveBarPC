@@ -131,4 +131,19 @@ public sealed class BarControlsRedesignTests
         Assert.Contains("RenderOptions.EdgeMode=\"Aliased\"", sensorXaml);
         Assert.Contains("Binding=\"{Binding Tag, ElementName=SensorRoot}\" Value=\"True\"", sensorXaml);
     }
+
+    [Fact]
+    public void FlexNavButtonStyle_UsesThemedSemanticTokens()
+    {
+        var xaml = GetBarControlsXaml();
+        var navStart = xaml.IndexOf("x:Key=\"FlexNavButtonStyle\"", StringComparison.Ordinal);
+        Assert.True(navStart >= 0, "FlexNavButtonStyle must be defined in BarControls.xaml");
+        var navEnd = xaml.IndexOf("</Style>", navStart, StringComparison.Ordinal);
+        var navXaml = xaml[navStart..navEnd];
+
+        Assert.Contains("Property=\"Background\" Value=\"{DynamicResource SurfaceControl}\"", navXaml);
+        Assert.Contains("Property=\"Foreground\" Value=\"{DynamicResource TextPrimary}\"", navXaml);
+        Assert.Contains("Property=\"BorderBrush\" Value=\"{DynamicResource ControlBorderBrush}\"", navXaml);
+        Assert.Contains("Property=\"FontFamily\" Value=\"{DynamicResource IconFontFamily}\"", navXaml);
+    }
 }

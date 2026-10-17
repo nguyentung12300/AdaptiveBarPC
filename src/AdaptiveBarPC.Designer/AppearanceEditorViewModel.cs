@@ -690,7 +690,7 @@ public sealed class AppearanceEditorViewModel : INotifyPropertyChanged
                 SelectPreset(id);
         });
 
-        ResetPresetCommand = new EditorCommand(_ => SelectPreset(AppearanceResolver.Fluid));
+        ResetPresetCommand = new EditorCommand(_ => ResetPreset());
         ResetIntensityCommand = new EditorCommand(_ => SetIntensity(1.0));
         ResetMotionCommand = new EditorCommand(_ => SetMotion(true));
         ResetAppearanceCommand = new EditorCommand(_ => ResetAppearance());
@@ -1091,6 +1091,19 @@ public sealed class AppearanceEditorViewModel : INotifyPropertyChanged
             CheckCleanAppearance();
             _designer.OnAppearanceEdited();
         }
+        else if (_designer.GlobalAppearance.Theme?.Accent is not null)
+        {
+            _designer.GlobalAppearance.Theme.Accent = null;
+            var defaults = AppearanceResolver.GetPresetDefaults(SelectedPresetId);
+            _isLoading = true;
+            AccentEditor.UpdateState(defaults.Accent, false);
+            if (!HasCustomSecondaryAccent)
+            {
+                SecondaryAccentEditor.UpdateState(defaults.SecondaryAccent, false);
+            }
+            _isLoading = false;
+            _designer.OnAppearanceEdited();
+        }
     }
 
     public void SetSecondaryAccent(string hex)
@@ -1122,6 +1135,14 @@ public sealed class AppearanceEditorViewModel : INotifyPropertyChanged
             SecondaryAccentEditor.UpdateState(Accent, false);
             _isLoading = false;
             CheckCleanAppearance();
+            _designer.OnAppearanceEdited();
+        }
+        else
+        {
+            var defaults = AppearanceResolver.GetPresetDefaults(SelectedPresetId);
+            _isLoading = true;
+            SecondaryAccentEditor.UpdateState(defaults.SecondaryAccent, false);
+            _isLoading = false;
             _designer.OnAppearanceEdited();
         }
     }
@@ -1257,8 +1278,15 @@ public sealed class AppearanceEditorViewModel : INotifyPropertyChanged
     public void ResetAppearance()
     {
         _designer.GlobalAppearance.Appearance = null;
+        _designer.GlobalAppearance.Theme = new ThemeDefinition();
+        _designer.GlobalAppearance.BackgroundMedia = new BackgroundMediaDefinition();
         LoadFromSettings(_designer.GlobalAppearance);
         _designer.OnAppearanceEdited();
+    }
+
+    public void ResetPreset()
+    {
+        ResetAppearance();
     }
 
     private void EnsureAppearanceDefinition()

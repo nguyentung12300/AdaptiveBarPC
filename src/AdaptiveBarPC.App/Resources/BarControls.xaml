@@ -442,15 +442,15 @@
     <!-- ============================================================ -->
 
     <Style x:Key="FlexNavButtonStyle" TargetType="{x:Type controls:LongPressButton}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceControl}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
         <Setter Property="Width" Value="56"/>
         <Setter Property="Height" Value="56"/>
         <Setter Property="Margin" Value="2,0"/>
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Variable, Segoe UI"/>
+        <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}"/>
         <Setter Property="FontSize" Value="11"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="IsTabStop" Value="False"/>
@@ -487,7 +487,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlHover}"/>
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource StrokeStrong}"/>
                             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">

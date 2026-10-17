@@ -2030,9 +2030,9 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="PRESET GALLERY" Foreground="{StaticResource SecondaryText}" FontSize="10.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                    <Button AutomationProperties.Name="Reset preset to Fluid" Grid.Column="1"
+                                    <Button AutomationProperties.Name="Reset preset to Fluid defaults" Grid.Column="1"
                                             Content="↺"
-                                            ToolTip="Reset preset to Fluid"
+                                            ToolTip="Reset preset, theme colors, and background media to defaults"
                                             Command="{Binding ResetPresetCommand}"
                                             Style="{StaticResource EditorSecondaryButtonStyle}"
                                             Padding="6,1"/>

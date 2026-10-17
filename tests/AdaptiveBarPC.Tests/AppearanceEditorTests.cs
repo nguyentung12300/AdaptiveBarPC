@@ -533,6 +533,88 @@ public sealed class AppearanceEditorTests
     }
 
     [Fact]
+    public void ResetAppearance_ClearsThemeColorsAndBackgroundMedia()
+    {
+        using var folder = new TempProfiles(CreateProfile("reset-theme-media", new AppearanceDefinition
+        {
+            Preset = "rgb",
+            Accent = "#FFFF0055",
+            SecondaryAccent = "#FF00FFFF"
+        }, new ThemeDefinition
+        {
+            Background = "#FF123456",
+            TileBackground = "#FF654321",
+            PrimaryText = "#FFFFFFFF",
+            SecondaryText = "#FFCCCCCC"
+        }));
+        var vm = new DesignerViewModel(folder.DirectoryPath, folder.AppearancePath);
+
+        // Configure custom background media
+        vm.AppearanceEditor.BackgroundMediaSource = "videos/neon.mp4";
+        vm.AppearanceEditor.BackgroundMediaZoom = 2.0;
+        vm.AppearanceEditor.BackgroundMediaOffsetX = 50;
+        vm.AppearanceEditor.BackgroundMediaOffsetY = -20;
+
+        Assert.Equal("rgb", vm.AppearanceEditor.SelectedPresetId);
+        Assert.True(vm.AppearanceEditor.HasCustomBackground);
+        Assert.True(vm.AppearanceEditor.HasCustomSurface);
+        Assert.Equal("videos/neon.mp4", vm.AppearanceEditor.BackgroundMediaSource);
+
+        vm.AppearanceEditor.ResetAppearanceCommand.Execute(null);
+
+        var saved = GlobalAppearanceStore.Load(folder.AppearancePath);
+        Assert.Null(saved.Appearance);
+        Assert.Equal(AppearanceResolver.Fluid, vm.AppearanceEditor.SelectedPresetId);
+        Assert.False(vm.AppearanceEditor.HasCustomAccent);
+        Assert.False(vm.AppearanceEditor.HasCustomSecondaryAccent);
+        Assert.False(vm.AppearanceEditor.HasCustomBackground);
+        Assert.False(vm.AppearanceEditor.HasCustomSurface);
+        Assert.False(vm.AppearanceEditor.HasCustomPrimaryText);
+        Assert.False(vm.AppearanceEditor.HasCustomSecondaryText);
+        Assert.Equal("", vm.AppearanceEditor.BackgroundMediaSource);
+        Assert.Equal(1.0, vm.AppearanceEditor.BackgroundMediaZoom);
+        Assert.Equal(0, vm.AppearanceEditor.BackgroundMediaOffsetX);
+        Assert.Equal(0, vm.AppearanceEditor.BackgroundMediaOffsetY);
+        Assert.True(string.IsNullOrEmpty(saved.BackgroundMedia?.Source));
+    }
+
+    [Fact]
+    public void ResetPreset_ClearsThemeColorsAndBackgroundMedia()
+    {
+        using var folder = new TempProfiles(CreateProfile("reset-preset-gallery", new AppearanceDefinition
+        {
+            Preset = "pixel",
+            Accent = "#FF00E5FF",
+            SecondaryAccent = "#FFFF0055"
+        }, new ThemeDefinition
+        {
+            Background = "#FF102030",
+            TileBackground = "#FF405060"
+        }));
+        var vm = new DesignerViewModel(folder.DirectoryPath, folder.AppearancePath);
+
+        vm.AppearanceEditor.BackgroundMediaSource = "media/retro.gif";
+        vm.AppearanceEditor.BackgroundMediaZoom = 1.5;
+
+        Assert.Equal("pixel", vm.AppearanceEditor.SelectedPresetId);
+        Assert.True(vm.AppearanceEditor.HasCustomBackground);
+        Assert.Equal("media/retro.gif", vm.AppearanceEditor.BackgroundMediaSource);
+
+        vm.AppearanceEditor.ResetPresetCommand.Execute(null);
+
+        var saved = GlobalAppearanceStore.Load(folder.AppearancePath);
+        Assert.Null(saved.Appearance);
+        Assert.Equal(AppearanceResolver.Fluid, vm.AppearanceEditor.SelectedPresetId);
+        Assert.False(vm.AppearanceEditor.HasCustomAccent);
+        Assert.False(vm.AppearanceEditor.HasCustomSecondaryAccent);
+        Assert.False(vm.AppearanceEditor.HasCustomBackground);
+        Assert.False(vm.AppearanceEditor.HasCustomSurface);
+        Assert.Equal("", vm.AppearanceEditor.BackgroundMediaSource);
+        Assert.Equal(1.0, vm.AppearanceEditor.BackgroundMediaZoom);
+        Assert.True(string.IsNullOrEmpty(saved.BackgroundMedia?.Source));
+    }
+
+    [Fact]
     public void AssetAndGlyphIcons_RemainValidWithAppearanceChanges()
     {
         var profile = CreateProfile("icons-preset-switch", appearance: null);
@@ -1223,11 +1305,12 @@ public sealed class AppearanceEditorTests
     }
 
 
-    private static ProfileDefinition CreateProfile(string id, AppearanceDefinition? appearance = null) => new()
+    private static ProfileDefinition CreateProfile(string id, AppearanceDefinition? appearance = null, ThemeDefinition? theme = null) => new()
     {
         Id = id,
         DisplayName = $"Test Profile {id}",
         Appearance = appearance,
+        Theme = theme ?? new(),
         Pages =
         [
             new()
