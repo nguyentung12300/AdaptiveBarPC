@@ -20,44 +20,51 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Publish win-x64 and win-arm64
+      - name: Restore win-x64 dependencies
+        run: dotnet restore AdaptiveBarPC.sln --runtime win-x64
+
+      - name: Publish application and designer
         shell: pwsh
         run: |
-          $ErrorActionPreference = "Stop"
-          $rids = @("win-x64", "win-arm64")
-          $artifactDirectory = Join-Path $env:GITHUB_WORKSPACE "artifacts"
-          New-Item -ItemType Directory -Force -Path $artifactDirectory | Out-Null
+          $ErrorActionPreference = 'Stop'
+          $tag = $env:GITHUB_REF_NAME
+          $stage = Join-Path $env:RUNNER_TEMP "AdaptiveBarPC-$tag"
+          $appOutput = Join-Path $stage 'AdaptiveBarPC'
+          $designerOutput = Join-Path $stage 'AdaptiveBarPC-Studio'
+          $artifactDirectory = Join-Path $env:GITHUB_WORKSPACE 'artifacts'
 
-          foreach ($rid in $rids) {
-            $stage = Join-Path $env:RUNNER_TEMP "AdaptiveBarPC-$rid"
-            $appOutput = Join-Path $stage "AdaptiveBarPC"
-            $studioOutput = Join-Path $stage "AdaptiveBarStudio"
-            New-Item -ItemType Directory -Force -Path $appOutput, $studioOutput | Out-Null
+          if (Test-Path $stage) {
+            Remove-Item $stage -Recurse -Force
+          }
+          New-Item -ItemType Directory -Force -Path $appOutput, $designerOutput, $artifactDirectory | Out-Null
 
-            dotnet restore AdaptiveBarPC.sln --runtime $rid
-            if ($LASTEXITCODE -ne 0) { throw "Restore failed for $rid" }
+          dotnet publish src/AdaptiveBarPC.App/AdaptiveBarPC.App.csproj `
+            --configuration Release --runtime win-x64 --self-contained true `
+            -p:PublishSingleFile=false --no-restore --output $appOutput
+          if ($LASTEXITCODE -ne 0) { throw 'AdaptiveBarPC.App publish failed.' }
 
-            dotnet publish src/AdaptiveBarPC.App/AdaptiveBarPC.App.csproj --configuration Release --runtime $rid --self-contained true --no-restore --output $appOutput
-            if ($LASTEXITCODE -ne 0) { throw "AdaptiveBarPC publish failed for $rid" }
+          dotnet publish src/AdaptiveBarPC.Designer/AdaptiveBarPC.Designer.csproj `
+            --configuration Release --runtime win-x64 --self-contained true `
+            -p:PublishSingleFile=false --no-restore --output $designerOutput
+          if ($LASTEXITCODE -ne 0) { throw 'AdaptiveBarPC.Designer publish failed.' }
 
-            dotnet publish src/AdaptiveBarPC.Designer/AdaptiveBarPC.Designer.csproj --configuration Release --runtime $rid --self-contained true --no-restore --output $studioOutput
-            if ($LASTEXITCODE -ne 0) { throw "AdaptiveBar Studio publish failed for $rid" }
-
-            $profilesOutput = Join-Path $appOutput "Profiles"
-            New-Item -ItemType Directory -Force -Path $profilesOutput | Out-Null
-            Copy-Item -Path "src/AdaptiveBarPC.App/Profiles/*" -Destination $profilesOutput -Recurse -Force
-
-            Copy-Item LICENSE, THIRD-PARTY-NOTICES.md, README.md -Destination $stage -Force
-            $archive = Join-Path $artifactDirectory "AdaptiveBarPC-$($env:GITHUB_REF_NAME)-$rid.zip"
-            Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $archive -CompressionLevel Optimal -Force
+          $profilesSource = Join-Path $env:GITHUB_WORKSPACE 'src/AdaptiveBarPC.App/Profiles'
+          $profilesOutput = Join-Path $appOutput 'Profiles'
+          New-Item -ItemType Directory -Force -Path $profilesOutput | Out-Null
+          if (Test-Path $profilesSource) {
+            Copy-Item -Path (Join-Path $profilesSource '*') -Destination $profilesOutput -Recurse -Force
           }
 
+          Copy-Item -Path @('LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md') -Destination $stage -Force
+          $archive = Join-Path $artifactDirectory "AdaptiveBarPC-$tag-win-x64.zip"
+          Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $archive -CompressionLevel Optimal -Force
+
       - name: Create GitHub Release
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          $assets = Get-ChildItem -Path "artifacts/*.zip" | ForEach-Object { $_.FullName }
-          if ($assets.Count -ne 2) { throw "Expected two runtime archives, found $($assets.Count)" }
-          gh release create "$env:GITHUB_REF_NAME" @assets --verify-tag --generate-notes
-          if ($LASTEXITCODE -ne 0) { throw "GitHub Release creation failed" }
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: AdaptiveBarPC ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: artifacts/AdaptiveBarPC-${{ github.ref_name }}-win-x64.zip
+          token: ${{ secrets.GITHUB_TOKEN }}

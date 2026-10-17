@@ -35,7 +35,20 @@ To open the profile designer:
 dotnet run --project src/AdaptiveBarPC.Designer/AdaptiveBarPC.Designer.csproj
 ~~~
 
-Published win-x64 and win-arm64 ZIPs will be attached to tagged GitHub Releases after the repository is set up.
+Tagged GitHub Releases include a self-contained win-x64 ZIP with the app, AdaptiveBar Studio, sample profiles, and required assets.
+
+## Create a GitHub Release
+
+After merging the release changes into `main`, create and push a version tag to build the downloadable ZIP and attach it to a GitHub Release:
+
+~~~powershell
+git checkout main
+git pull --ff-only origin main
+git tag -a v0.3.2 -m "AdaptiveBarPC v0.3.2"
+git push origin v0.3.2
+~~~
+
+Use a new `vMAJOR.MINOR.PATCH` tag for each release. Pushing the tag starts `.github/workflows/release.yml`; the resulting asset is named `AdaptiveBarPC-v0.3.2-win-x64.zip`.
 
 ## Create a profile
 
