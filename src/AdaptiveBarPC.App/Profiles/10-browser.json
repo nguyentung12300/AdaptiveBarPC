@@ -1,0 +1,270 @@
+{
+  "id": "browser",
+  "displayName": "Browser",
+  "priority": 50,
+  "theme": {
+    "background": "#FF0D1117",
+    "tileBackground": "#FF1D2733",
+    "accent": "#FF55A7FF",
+    "primaryText": "#E6F7FAFC",
+    "secondaryText": "#8091A4B7"
+  },
+  "match": {
+    "processNames": [
+      "chrome",
+      "msedge",
+      "brave",
+      "browser",
+      "opera"
+    ],
+    "category": "browser"
+  },
+  "pages": [
+    {
+      "id": "nav",
+      "displayName": "Navigation",
+      "items": [
+        {
+          "type": "button",
+          "label": "Back",
+          "width": 72,
+          "action": {
+            "type": "key",
+            "value": "ALT+LEFT"
+          },
+          "secondaryAction": {
+            "type": "key",
+            "value": "ALT+HOME"
+          }
+        },
+        {
+          "type": "button",
+          "label": "Forward",
+          "width": 80,
+          "action": {
+            "type": "key",
+            "value": "ALT+RIGHT"
+          }
+        },
+        {
+          "type": "button",
+          "label": "Refresh",
+          "width": 80,
+          "action": {
+            "type": "key",
+            "value": "CTRL+R"
+          },
+          "secondaryAction": {
+            "type": "key",
+            "value": "CTRL+SHIFT+R"
+          }
+        },
+        {
+          "type": "button",
+          "label": "New tab",
+          "width": 80,
+          "action": {
+            "type": "key",
+            "value": "CTRL+T"
+          },
+          "secondaryAction": {
+            "type": "key",
+            "value": "CTRL+SHIFT+T"
+          }
+        },
+        {
+          "type": "button",
+          "label": "Address",
+          "width": 76,
+          "action": {
+            "type": "key",
+            "value": "CTRL+L"
+          }
+        },
+        {
+          "type": "spacer",
+          "width": 6
+        },
+        {
+          "type": "media",
+          "label": "Media",
+          "width": 0,
+          "collapseWhenUnavailable": true
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "tabs",
+      "displayName": "Tabs",
+      "items": [
+        {
+          "type": "button",
+          "label": "Prev tab",
+          "width": 105,
+          "action": {
+            "type": "key",
+            "value": "CTRL+SHIFT+TAB"
+          }
+        },
+        {
+          "type": "button",
+          "label": "Next tab",
+          "width": 105,
+          "action": {
+            "type": "key",
+            "value": "CTRL+TAB"
+          }
+        },
+        {
+          "type": "button",
+          "label": "Close tab",
+          "width": 105,
+          "action": {
+            "type": "key",
+            "value": "CTRL+W"
+          }
+        },
+        {
+          "type": "button",
+          "label": "Reopen",
+          "width": 95,
+          "action": {
+            "type": "key",
+            "value": "CTRL+SHIFT+T"
+          }
+        },
+        {
+          "type": "spacer",
+          "width": 6
+        },
+        {
+          "type": "media",
+          "label": "Media",
+          "width": 0,
+          "collapseWhenUnavailable": true
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "displayName": "System",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "provider": "hardware",
+          "emptyBehavior": "collapse",
+          "maxItems": 6,
+          "width": 0
+        },
+        {
+          "type": "media",
+          "label": "Media",
+          "width": 0,
+          "collapseWhenUnavailable": true
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "mixer",
+      "displayName": "Mixer",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "provider": "audioSessions",
+          "emptyBehavior": "default",
+          "width": 0
+        },
+        {
+          "type": "media",
+          "label": "Media",
+          "width": 0,
+          "collapseWhenUnavailable": true
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    }
+  ]
+}

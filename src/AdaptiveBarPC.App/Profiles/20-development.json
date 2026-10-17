@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "id": "development",
+  "displayName": "Development",
+  "priority": 20,
+  "isDefault": false,
+  "match": {
+    "processNames": [],
+    "category": "development",
+    "categories": []
+  },
+  "items": [],
+  "pages": [
+    {
+      "id": "main",
+      "displayName": "Main",
+      "items": [
+        {
+          "type": "button",
+          "id": "widget-ee65839416cb",
+          "label": "Terminal",
+          "width": 84,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "key",
+            "value": "CTRL\u002BGRAVE"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-f1e1dd6e47ef",
+          "label": "Command Palette",
+          "width": 136,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "key",
+            "value": "CTRL\u002BSHIFT\u002BP"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "spacer",
+          "id": "widget-79103635f436",
+          "label": "",
+          "width": 6,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "media",
+          "id": "widget-e97b259b94b9",
+          "label": "Media",
+          "width": 0,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": true,
+          "autoCollapse": true,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "slider",
+          "id": "widget-90ca47c58689",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-cb3afca7c130",
+          "label": "Mute",
+          "width": 60,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "displayName": "System",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "id": "widget-b16532dd4fcc",
+          "label": "",
+          "width": 0,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "provider": "hardware",
+          "emptyBehavior": "collapse",
+          "maxItems": 6,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "slider",
+          "id": "widget-815c510204b7",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-d7caec4056af",
+          "label": "Mute",
+          "width": 60,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    },
+    {
+      "id": "mixer",
+      "displayName": "Mixer",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "id": "widget-5aa04986e067",
+          "label": "",
+          "width": 0,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "provider": "audioSessions",
+          "emptyBehavior": "default",
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "slider",
+          "id": "widget-179b16a552bc",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-6e9b97e351b7",
+          "label": "Mute",
+          "width": 60,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    }
+  ],
+  "theme": {
+    "background": "#FF0E1117",
+    "tileBackground": "#FF161B22",
+    "accent": "#FF2F81F7",
+    "primaryText": "#E6F0F6FC",
+    "secondaryText": "#808B949E"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "eldenring-example",
+  "displayName": "Game",
+  "priority": 100,
+  "theme": {
+    "background": "#ED090B0D",
+    "tileBackground": "#FF181C20",
+    "accent": "#FFE0B15B",
+    "primaryText": "#FFF6F0E4",
+    "secondaryText": "#FFAA9B83"
+  },
+  "match": {
+    "processNames": ["eldenring"]
+  },
+  "pages": [
+    {
+      "id": "media",
+      "displayName": "Media",
+      "items": [
+        {
+          "type": "button",
+          "label": "Prev",
+          "width": 76,
+          "action": { "type": "media", "value": "previous" }
+        },
+        {
+          "type": "button",
+          "label": "Play",
+          "width": 76,
+          "action": { "type": "media", "value": "play_pause" },
+          "secondaryAction": { "type": "launch", "value": "spotify:" }
+        },
+        {
+          "type": "button",
+          "label": "Next",
+          "width": 76,
+          "action": { "type": "media", "value": "next" }
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 250,
+          "min": 0,
+          "max": 100,
+          "action": { "type": "volume" }
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 80,
+          "action": { "type": "media", "value": "mute" }
+        }
+      ]
+    }
+  ]
+}

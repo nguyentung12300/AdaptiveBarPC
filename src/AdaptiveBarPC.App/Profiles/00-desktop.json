@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "id": "desktop",
+  "displayName": "Desktop",
+  "priority": 0,
+  "isDefault": true,
+  "match": {
+    "processNames": [],
+    "categories": []
+  },
+  "items": [],
+  "pages": [
+    {
+      "id": "main",
+      "displayName": "Main",
+      "items": [
+        {
+          "type": "button",
+          "id": "widget-d1156cf0def0",
+          "label": "Explorer",
+          "icon": {
+            "kind": "glyph",
+            "value": ""
+          },
+          "width": 84,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "launch",
+            "value": "explorer.exe"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-a5b51264c9d2",
+          "label": "Browser",
+          "width": 80,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "launch",
+            "value": "https://www.google.com"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "spacer",
+          "id": "widget-b58800d10e82",
+          "label": "",
+          "width": 6,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "media",
+          "id": "widget-897466899f4a",
+          "label": "Media",
+          "width": 0,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "slider",
+          "id": "widget-f08191f18c73",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-b050eaeb208b",
+          "label": "Mute",
+          "icon": {
+            "kind": "glyph",
+            "value": "E74F"
+          },
+          "width": 60,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "displayName": "Tools",
+      "items": [
+        {
+          "type": "button",
+          "id": "widget-8c67fce80a9f",
+          "label": "Terminal",
+          "width": 105,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "launch",
+            "value": "wt.exe"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-2aae73c0d1a5",
+          "label": "Settings",
+          "width": 105,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "launch",
+            "value": "ms-settings:"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-fc8ce9f3a78f",
+          "label": "Task Mgr",
+          "width": 105,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "launch",
+            "value": "taskmgr.exe"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "spacer",
+          "id": "widget-d19fee54af1c",
+          "label": "",
+          "width": 16,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-c8f56334d514",
+          "label": "Close bar",
+          "width": 110,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "close_app"
+          },
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "displayName": "System",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "id": "widget-07649a58ce1b",
+          "label": "",
+          "width": 0,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "provider": "hardware",
+          "emptyBehavior": "collapse",
+          "maxItems": 6,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "slider",
+          "id": "widget-404b0e4f8a7f",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-733159d96e62",
+          "label": "Mute",
+          "width": 60,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    },
+    {
+      "id": "mixer",
+      "displayName": "Mixer",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "id": "widget-44488f4b6d92",
+          "label": "",
+          "width": 0,
+          "min": 0,
+          "max": 100,
+          "system": false,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "provider": "audioSessions",
+          "emptyBehavior": "default",
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "slider",
+          "id": "widget-72582973bad6",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        },
+        {
+          "type": "button",
+          "id": "widget-e3f6862c54a2",
+          "label": "Mute",
+          "width": 60,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true,
+          "collapseWhenUnavailable": false,
+          "autoCollapse": false,
+          "isChecked": false,
+          "states": []
+        }
+      ]
+    }
+  ],
+  "theme": {
+    "background": "#FF0E0E11",
+    "tileBackground": "#FF222228",
+    "accent": "#FF7C5CFC",
+    "primaryText": "#E6F5F5F7",
+    "secondaryText": "#80F5F5F7"
+  }
+}

@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore AdaptiveBarPC.sln
+
+      - name: Build Release
+        run: dotnet build AdaptiveBarPC.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test AdaptiveBarPC.sln --no-build --configuration Release

@@ -1,0 +1,17 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- User-supplied NT mark, redrawn as geometry for crisp native scaling. -->
+    <DrawingImage x:Key="AppLogo">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Black" Geometry="M0,0 H432 V432 H0 Z"/>
+                <DrawingGroup>
+                    <!-- Center the visual weight of NT; the T tip overhangs to the right. -->
+                    <DrawingGroup.Transform><TranslateTransform X="61" Y="64"/></DrawingGroup.Transform>
+                    <GeometryDrawing Brush="White"
+                                     Geometry="M0,0 L207,186 L207,66 L118,66 L118,0 L294,0 L368,66 L280,66 L280,330 L207,330 L207,275 L68,149 L68,330 L0,330 Z"/>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

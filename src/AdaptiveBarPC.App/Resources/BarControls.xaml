@@ -1,0 +1,1457 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:AdaptiveBarPC.ViewModels"
+    xmlns:controls="clr-namespace:AdaptiveBarPC.Controls"
+    xmlns:res="clr-namespace:AdaptiveBarPC.Resources">
+
+    <!--
+        BarControls.xaml — AdaptiveBar / Touch Bar canonical widget DataTemplates.
+        Fluid Hardware Surface design language:
+        - Standardized 56 DIP tactile surface pills
+        - Shared ThemeTokens semantic brush hierarchy
+        - 8 DIP consistent corner radii
+        - High-contrast touch feedback (hover, pressed scale, active glow)
+        - Clean typography and unified widget geometry
+    -->
+
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    <res:CommandLabelConverter x:Key="CommandLabelConverter"/>
+    <res:PixelGlyphConverter x:Key="PixelGlyphConverter"/>
+
+    <Style x:Key="ThemedIconFontStyle" TargetType="TextBlock">
+        <Setter Property="Tag" Value="{DynamicResource IsPixelPreset}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}"/>
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="RenderOptions.EdgeMode" Value="Aliased"/>
+    </Style>
+
+    <Style x:Key="ThemedDisplayGlyphStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource ThemedIconFontStyle}">
+        <Setter Property="Text">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                    <Binding Path="DisplayGlyph"/>
+                    <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Pixelarticons (MIT): https://github.com/halfmage/pixelarticons -->
+    <Geometry x:Key="PixelCpuIcon">M5 3h14v2H5zm0 16h14v2H5zM3 5h2v14H3zm16 0h2v14h-2zM9 7h6v2H9zm0 8h6v2H9zM7 9h2v6H7zm8 0h2v6h-2zm-4-8h2v2h-2zm0 20h2v2h-2zM1 11h2v2H1zm20 0h2v2h-2zm0-4h2v2h-2zm0 8h2v2h-2zM1 15h2v2H1zm0-8h2v2H1zm6-6h2v2H7zm8 0h2v2h-2zm0 20h2v2h-2zm-8 0h2v2H7z</Geometry>
+    <Geometry x:Key="PixelGpuIcon">M4 2h16v2H4zm0 14h16v2H4zM2 4h2v12H2zm18 0h2v12h-2zm-9 14h2v2h-2zm-3 2h8v2H8z</Geometry>
+    <Geometry x:Key="PixelTemperatureIcon">M9 2h6v2H9zm0 18h6v2H9zm2-4h2v2h-2zM7 4h2v16H7zm8 0h2v16h-2zM5 16h4v2H5zM5 6h4v2H5zm0 5h4v2H5z</Geometry>
+    <Geometry x:Key="PixelMemoryIcon">M3 4h18v2H3zM1 6h2v3H1zm0 5h2v7H1zm20 0h2v7h-2zM3 9h2v2H3zm16 0h2v2h-2zm2-3h2v3h-2zM3 18h18v2H3zm0-4h18v2H3zm2 2h2v2H5zm4 0h2v2H9zm4 0h2v2h-2zm4 0h2v2h-2zM7 8h2v4H7zm4 0h2v4h-2zm4 0h2v4h-2z</Geometry>
+
+    <DataTemplate x:Key="BarIconPresentationTemplate">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
+            <Image x:Name="AssetIcon"
+                   Source="{Binding AssetIcon}"
+                   Width="18"
+                   Height="18"
+                   Stretch="Uniform"
+                   Visibility="Collapsed"/>
+            <TextBlock x:Name="GlyphIcon"
+                       Style="{StaticResource ThemedDisplayGlyphStyle}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="Collapsed"/>
+            <TextBlock x:Name="FallbackLabel"
+                       Tag="{DynamicResource IsPixelPreset}"
+                       FontFamily="{DynamicResource CommandFontFamily}"
+                       FontSize="12"
+                       FontWeight="{DynamicResource CommandFontWeight}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource CommandLabelConverter}">
+                        <Binding Path="IconFallbackLabel"/>
+                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasGlyphIcon}" Value="True">
+                <Setter TargetName="GlyphIcon" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="FallbackLabel" Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding HasAssetIcon}" Value="True">
+                <Setter TargetName="AssetIcon" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="GlyphIcon" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="FallbackLabel" Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- Emoji artwork keeps its own colors and smooth edges in every theme. -->
+    <DataTemplate x:Key="EmojiPresentationTemplate">
+        <Grid Width="32" Height="32" IsHitTestVisible="False">
+            <Image x:Name="EmojiImage"
+                   Source="{Binding AssetIcon}"
+                   Stretch="Uniform"
+                   RenderOptions.BitmapScalingMode="HighQuality"/>
+            <TextBlock x:Name="EmojiFallback"
+                       Text="{Binding Label}"
+                       FontFamily="Segoe UI Emoji"
+                       FontWeight="Normal"
+                       FontSize="28"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="Collapsed"/>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasAssetIcon}" Value="False">
+                <Setter TargetName="EmojiImage" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="EmojiFallback" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Slider Style — 56 DIP touch surface, 6 DIP capsule track,   -->
+    <!--                 18 DIP tactile high-contrast thumb           -->
+    <!-- ============================================================ -->
+
+    <Style x:Key="FlexSliderStyle" TargetType="Slider">
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid VerticalAlignment="Center" Height="{TemplateBinding Height}" Background="Transparent">
+                        <!-- Background track -->
+                        <Border Height="{DynamicResource SliderTrackHeight}"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource SliderTrackBackgroundBrush}"
+                                BorderBrush="{DynamicResource SliderTrackBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource SliderTrackCornerRadius}"
+                                SnapsToDevicePixels="True"/>
+                        <Track x:Name="PART_Track"
+                               Minimum="{TemplateBinding Minimum}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Value="{TemplateBinding Value}"
+                               Orientation="Horizontal"
+                               IsDirectionReversed="False">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                              IsTabStop="False"
+                                              Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Height="{DynamicResource SliderTrackHeight}"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource SliderTrackForegroundBrush}"
+                                                    CornerRadius="{DynamicResource SliderTrackCornerRadius}"
+                                                    SnapsToDevicePixels="True"/>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                              IsTabStop="False"
+                                              Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent"/>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Width="18" Height="18" Focusable="False" IsTabStop="False">
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Grid Width="18" Height="18" SnapsToDevicePixels="True">
+                                                <Border x:Name="ThumbShadow"
+                                                        Background="#40000000"
+                                                        CornerRadius="{DynamicResource SliderThumbCornerRadius}"
+                                                        Width="18" Height="18"
+                                                        Margin="0,1,0,-1"/>
+                                                <Border x:Name="ThumbBg"
+                                                        Background="{DynamicResource TextPrimary}"
+                                                        BorderBrush="{DynamicResource SliderThumbAccentBrush}"
+                                                        BorderThickness="2"
+                                                        CornerRadius="{DynamicResource SliderThumbCornerRadius}"
+                                                        Width="16" Height="16"/>
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsDragging" Value="True">
+                                                    <Setter TargetName="ThumbBg" Property="Width" Value="18"/>
+                                                    <Setter TargetName="ThumbBg" Property="Height" Value="18"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Progress Bar Style — thin track (modern) / segmented (pixel) -->
+    <!-- ============================================================ -->
+
+    <Style x:Key="FlexProgressBarStyle" TargetType="ProgressBar">
+        <Setter Property="Height" Value="{DynamicResource ProgressBarHeight}"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid x:Name="Root" Height="{TemplateBinding Height}" SnapsToDevicePixels="True">
+                        <Border x:Name="PART_Track"
+                                Background="{DynamicResource ProgressBarTrackBrush}"
+                                BorderBrush="{DynamicResource SliderTrackBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource ProgressBarCornerRadius}"/>
+                        <Border x:Name="PART_Indicator"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{DynamicResource ProgressBarCornerRadius}"
+                                HorizontalAlignment="Left"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Media Button Styles — compact touch transport controls       -->
+    <!-- ============================================================ -->
+
+    <!-- Previous / Next: subtle tactile icon button -->
+    <Style x:Key="MediaTransportButtonStyle" TargetType="{x:Type controls:LongPressButton}">
+        <Setter Property="Width" Value="56"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Tag" Value="{DynamicResource IsPixelPreset}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:LongPressButton}">
+                    <Border x:Name="OuterBorder"
+                            Background="{DynamicResource PixelOutlineBrush}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            SnapsToDevicePixels="True">
+                        <Border x:Name="FaceBorder"
+                                Margin="{DynamicResource PixelButtonFaceMargin}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}">
+                            <Grid>
+                                <Border x:Name="HighlightBevel"
+                                        BorderThickness="1,1,0,0"
+                                        BorderBrush="{DynamicResource PixelHighlightBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <Border x:Name="ShadowBevel"
+                                        BorderThickness="0,0,1,1"
+                                        BorderBrush="{DynamicResource PixelShadowBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <ContentPresenter x:Name="ContentArea"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlHover}"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlPressed}"/>
+                            <Setter TargetName="ContentArea" Property="Margin" Value="{DynamicResource ButtonPressMargin}"/>
+                            <Setter TargetName="HighlightBevel" Property="BorderBrush" Value="{DynamicResource PixelShadowBrush}"/>
+                            <Setter TargetName="ShadowBevel" Property="BorderBrush" Value="Transparent"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.25"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SurfaceControl}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Play/Pause: prominent accent transport button -->
+    <Style x:Key="MediaPlayPauseButtonStyle" TargetType="{x:Type controls:LongPressButton}">
+        <Setter Property="Width" Value="56"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Tag" Value="{DynamicResource IsPixelPreset}"/>
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+        <Setter Property="Foreground" Value="{DynamicResource AccentPrimary}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ActiveAccentBrush}"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:LongPressButton}">
+                    <Grid Background="{DynamicResource PixelOutlineBrush}" SnapsToDevicePixels="True">
+                        <Border x:Name="FaceBorder"
+                                Margin="{DynamicResource PixelButtonFaceMargin}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}">
+                            <Grid>
+                                <Border x:Name="HighlightBevel"
+                                        BorderThickness="1,1,0,0"
+                                        BorderBrush="{DynamicResource PixelHighlightBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <Border x:Name="ShadowBevel"
+                                        BorderThickness="0,0,1,1"
+                                        BorderBrush="{DynamicResource PixelShadowBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <ContentPresenter x:Name="ContentArea"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <!-- Paint the accent over the frame, without shrinking the face. -->
+                        <Border x:Name="OuterBorder"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}"
+                                IsHitTestVisible="False"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource AccentGlow}"/>
+                            <Setter Property="Opacity" Value="0.95"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource AccentPrimary}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SurfaceBase}"/>
+                            <Setter TargetName="ContentArea" Property="Margin" Value="{DynamicResource ButtonPressMargin}"/>
+                            <Setter TargetName="HighlightBevel" Property="BorderBrush" Value="{DynamicResource PixelShadowBrush}"/>
+                            <Setter TargetName="ShadowBevel" Property="BorderBrush" Value="Transparent"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SurfaceControl}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Pill Button Style — 56 DIP hardware tactile surface pill     -->
+    <!-- ============================================================ -->
+
+    <Style x:Key="FlexPillButtonStyle" TargetType="{x:Type controls:LongPressButton}">
+        <Setter Property="Background" Value="{DynamicResource SurfaceControl}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource BarFontFamily}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="{DynamicResource BarFontWeight}"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Padding" Value="14,0"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:LongPressButton}">
+                    <Border x:Name="OuterBorder"
+                            Background="{DynamicResource PixelOutlineBrush}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            SnapsToDevicePixels="True">
+                        <Border x:Name="FaceBorder"
+                                Margin="{DynamicResource PixelButtonFaceMargin}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}">
+                            <Grid>
+                                <!-- Pixel Top/Left highlight bevel (1px) -->
+                                <Border x:Name="HighlightBevel"
+                                        BorderThickness="1,1,0,0"
+                                        BorderBrush="{DynamicResource PixelHighlightBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <!-- Pixel Bottom/Right shadow bevel (1px) -->
+                                <Border x:Name="ShadowBevel"
+                                        BorderThickness="0,0,1,1"
+                                        BorderBrush="{DynamicResource PixelShadowBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <ContentPresenter x:Name="ContentArea"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="{TemplateBinding Padding}"/>
+                            </Grid>
+                        </Border>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlHover}"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource StrokeStrong}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlPressed}"/>
+                            <Setter TargetName="ContentArea" Property="Margin" Value="{DynamicResource ButtonPressMargin}"/>
+                            <Setter TargetName="HighlightBevel" Property="BorderBrush" Value="{DynamicResource PixelShadowBrush}"/>
+                            <Setter TargetName="ShadowBevel" Property="BorderBrush" Value="Transparent"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type controls:LongPressButton}" BasedOn="{StaticResource FlexPillButtonStyle}"/>
+
+    <!-- ============================================================ -->
+    <!--  Navigation Button Style — 56 DIP compact header controls    -->
+    <!-- ============================================================ -->
+
+    <Style x:Key="FlexNavButtonStyle" TargetType="{x:Type controls:LongPressButton}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Width" Value="56"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Margin" Value="2,0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Variable, Segoe UI"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:LongPressButton}">
+                    <Border x:Name="OuterBorder"
+                            Background="{DynamicResource PixelOutlineBrush}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            SnapsToDevicePixels="True">
+                        <Border x:Name="FaceBorder"
+                                Margin="{DynamicResource PixelButtonFaceMargin}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource ControlCornerRadius}">
+                            <Grid>
+                                <Border x:Name="HighlightBevel"
+                                        BorderThickness="1,1,0,0"
+                                        BorderBrush="{DynamicResource PixelHighlightBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <Border x:Name="ShadowBevel"
+                                        BorderThickness="0,0,1,1"
+                                        BorderBrush="{DynamicResource PixelShadowBrush}"
+                                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                                        IsHitTestVisible="False"/>
+                                <ContentPresenter x:Name="ContentArea"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlHover}"/>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="FaceBorder" Property="Background" Value="{DynamicResource SurfaceControlPressed}"/>
+                            <Setter TargetName="ContentArea" Property="Margin" Value="{DynamicResource ButtonPressMargin}"/>
+                            <Setter TargetName="HighlightBevel" Property="BorderBrush" Value="{DynamicResource PixelShadowBrush}"/>
+                            <Setter TargetName="ShadowBevel" Property="BorderBrush" Value="Transparent"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.30"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================ -->
+    <!--  Button Widget — 56 DIP horizontal tactile action pill       -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:ButtonItemViewModel}">
+        <Grid x:Name="ButtonLayout" Margin="2,0" Height="56">
+            <controls:LongPressButton
+                x:Name="ActionBtn"
+                Style="{StaticResource FlexPillButtonStyle}"
+                Width="{Binding Width}"
+                Height="56"
+                ToolTip="{Binding Label}"
+                AutomationProperties.Name="{Binding Label}"
+                Command="{Binding Command}"
+                SecondaryCommand="{Binding SecondaryCommand}"
+                LongPressMilliseconds="{Binding LongPressMilliseconds}">
+                <ContentControl x:Name="ButtonPresentation" Content="{Binding}"
+                                ContentTemplate="{StaticResource BarIconPresentationTemplate}"
+                                FontSize="16"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                IsHitTestVisible="False"/>
+            </controls:LongPressButton>
+            <!-- Clear, elegant secondary-action indicator pill badge -->
+            <Border Width="12"
+                    Height="3"
+                    CornerRadius="1.5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,8,6"
+                    Background="{DynamicResource AccentSecondary}"
+                    Visibility="{Binding HasSecondaryAction, Converter={StaticResource BoolToVisibility}}"
+                    IsHitTestVisible="False"/>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsEmoji}" Value="True">
+                <Setter TargetName="ButtonLayout" Property="Height" Value="56"/>
+                <Setter TargetName="ActionBtn" Property="Height" Value="56"/>
+                <Setter TargetName="ActionBtn" Property="Padding" Value="6,0"/>
+                <Setter TargetName="ButtonPresentation" Property="ContentTemplate"
+                        Value="{StaticResource EmojiPresentationTemplate}"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Slider Widget — 56 DIP inline AdaptiveBar volume control        -->
+    <!--  Layout: [ 🔊 ]  [ ━━━━━━━━━🔘━━━━━ ]  [ 68% ]               -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:SliderItemViewModel}">
+        <Grid Width="{Binding Width}"
+                MinWidth="160"
+                Height="56"
+                Margin="2,0"
+                ToolTip="{Binding Label}"
+                AutomationProperties.Name="{Binding Label}"
+                SnapsToDevicePixels="True">
+            <Border Background="{DynamicResource SurfaceControl}"
+                    BorderBrush="{DynamicResource ControlBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                    IsHitTestVisible="False"/>
+            <Grid Margin="11,0" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26"/>
+                    <ColumnDefinition Width="*" MinWidth="72"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Semantic Icon (Volume, Brightness, Microphone, or custom Icon) -->
+                <ContentControl Grid.Column="0"
+                                Content="{Binding}"
+                                ContentTemplate="{StaticResource BarIconPresentationTemplate}"
+                                FontSize="14"
+                                Foreground="{DynamicResource TextSecondary}"
+                                VerticalContentAlignment="Center"
+                                Margin="0,0,8,0"
+                                IsHitTestVisible="False"/>
+
+                <!-- Interactive Track Slider -->
+                <controls:TouchSlider AutomationProperties.Name="{Binding Label}" Grid.Column="1"
+                                      Style="{StaticResource FlexSliderStyle}"
+                                      Height="56"
+                                      Foreground="{DynamicResource AccentPrimary}"
+                                      Minimum="{Binding Minimum}"
+                                      Maximum="{Binding Maximum}"
+                                      IsInteracting="{Binding IsInteracting, Mode=TwoWay}"
+                                      Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!-- Numeric Percentage Display -->
+                <TextBlock Grid.Column="2"
+                           Text="{Binding ValuePercentText}"
+                           FontFamily="{DynamicResource BarFontFamily}"
+                           FontSize="11"
+                           FontWeight="{DynamicResource BarFontWeight}"
+                           Width="34"
+                           TextAlignment="Right"
+                           Foreground="{DynamicResource TextSecondary}"
+                           VerticalAlignment="Center"
+                           Margin="6,0,0,0"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Expandable Touch Slider Widget                               -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:ExpandableSliderItemViewModel}">
+        <Grid x:Name="ExpandableSliderRoot"
+              Height="56"
+              Margin="2,0"
+              Width="{Binding ActualWidth, ElementName=ExpandableSliderInput}"
+              ClipToBounds="True"
+              IsEnabled="{Binding IsEnabled}"
+              ToolTip="{Binding Label}"
+              AutomationProperties.Name="{Binding Label}">
+            <Border Background="{DynamicResource SurfaceControl}"
+                    BorderBrush="{DynamicResource ControlBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                    SnapsToDevicePixels="True">
+                <Grid>
+                    <Border BorderThickness="1,1,0,0"
+                            BorderBrush="{DynamicResource PixelHighlightBrush}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            IsHitTestVisible="False"/>
+                    <Border BorderThickness="0,0,1,1"
+                            BorderBrush="{DynamicResource PixelShadowBrush}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            IsHitTestVisible="False"/>
+                </Grid>
+            </Border>
+
+            <TextBlock x:Name="CollapsedSliderIcon"
+                       Style="{StaticResource ThemedDisplayGlyphStyle}"
+                       FontSize="15"
+                       Foreground="{DynamicResource TextSecondary}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       IsHitTestVisible="False"/>
+
+            <Grid x:Name="ExpandedSliderPanel"
+                  Visibility="Collapsed"
+                  IsHitTestVisible="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="42"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Style="{StaticResource ThemedDisplayGlyphStyle}"
+                           FontSize="14"
+                           Foreground="{DynamicResource TextSecondary}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                <controls:SliderPresentation Grid.Column="1"
+                        Style="{StaticResource FlexSliderStyle}"
+                        Height="56"
+                        IsHitTestVisible="False"
+                        Foreground="{DynamicResource AccentPrimary}"
+                        Minimum="{Binding Minimum}"
+                        Maximum="{Binding Maximum}"
+                        Value="{Binding Value, ElementName=ExpandableSliderInput, Mode=OneWay}"/>
+
+                <TextBlock Grid.Column="2"
+                           Text="{Binding Value, StringFormat={}{0:0.##}}"
+                           FontFamily="{DynamicResource BarFontFamily}"
+                           FontSize="11"
+                           FontWeight="{DynamicResource BarFontWeight}"
+                           TextAlignment="Center"
+                           Foreground="{DynamicResource TextSecondary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+
+            <controls:ExpandableTouchSlider AutomationProperties.Name="{Binding Label}" x:Name="ExpandableSliderInput"
+                                            Height="56"
+                                            Minimum="{Binding Minimum}"
+                                            Maximum="{Binding Maximum}"
+                                            IsInteracting="{Binding IsInteracting, Mode=TwoWay}"
+                                            Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Icon="{Binding DisplayGlyph}"
+                                            ValueText="{Binding Value, StringFormat={}{0:0.##}}"
+                                            Foreground="{DynamicResource AccentPrimary}"
+                                            EnableAnimations="{Binding DataContext.EnableAnimations, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                            Focusable="False"
+                                            IsTabStop="False">
+                <controls:ExpandableTouchSlider.Template>
+                    <ControlTemplate TargetType="{x:Type controls:ExpandableTouchSlider}">
+                        <Border Background="Transparent"/>
+                    </ControlTemplate>
+                </controls:ExpandableTouchSlider.Template>
+            </controls:ExpandableTouchSlider>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsExpanded, ElementName=ExpandableSliderInput}" Value="True">
+                <Setter TargetName="CollapsedSliderIcon" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="ExpandedSliderPanel" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                <Setter TargetName="ExpandableSliderRoot" Property="Opacity" Value="0.45"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  MASTER Volume: compact speaker button expanding inline      -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:MasterVolumeItemViewModel}">
+        <Grid Height="56"
+              Margin="2,0"
+              Width="{Binding ActualWidth, ElementName=MasterVolumeInput}"
+              ClipToBounds="True"
+              ToolTip="{Binding Label}"
+              AutomationProperties.Name="{Binding Label}">
+            <Border Background="{DynamicResource SurfaceControl}"
+                    BorderBrush="{DynamicResource ControlBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                    SnapsToDevicePixels="True">
+                <Grid>
+                    <Border BorderThickness="1,1,0,0"
+                            BorderBrush="{DynamicResource PixelHighlightBrush}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            IsHitTestVisible="False"/>
+                    <Border BorderThickness="0,0,1,1"
+                            BorderBrush="{DynamicResource PixelShadowBrush}"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            IsHitTestVisible="False"/>
+                </Grid>
+            </Border>
+
+            <TextBlock x:Name="CollapsedVolumeGlyph"
+                       Style="{StaticResource ThemedDisplayGlyphStyle}"
+                       FontSize="15"
+                       Foreground="{DynamicResource TextSecondary}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       IsHitTestVisible="False"/>
+
+            <Grid x:Name="ExpandedVolumePanel"
+                  Visibility="Collapsed"
+                  IsHitTestVisible="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="42"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Style="{StaticResource ThemedDisplayGlyphStyle}"
+                           FontSize="14"
+                           Foreground="{DynamicResource TextSecondary}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                <controls:SliderPresentation Grid.Column="1"
+                        Style="{StaticResource FlexSliderStyle}"
+                        Height="56"
+                        IsHitTestVisible="False"
+                        Foreground="{DynamicResource AccentPrimary}"
+                        Minimum="{Binding Minimum}"
+                        Maximum="{Binding Maximum}"
+                        Value="{Binding Value, ElementName=MasterVolumeInput, Mode=OneWay}"/>
+
+                <TextBlock Grid.Column="2"
+                           Text="{Binding ValuePercentText}"
+                           FontFamily="{DynamicResource BarFontFamily}"
+                           FontSize="11"
+                           FontWeight="{DynamicResource BarFontWeight}"
+                           TextAlignment="Center"
+                           Foreground="{DynamicResource TextSecondary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+
+            <controls:ExpandableTouchSlider AutomationProperties.Name="Master volume" x:Name="MasterVolumeInput"
+                                            Height="56"
+                                            Minimum="{Binding Minimum}"
+                                            Maximum="{Binding Maximum}"
+                                            IsInteracting="{Binding IsInteracting, Mode=TwoWay}"
+                                            Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Icon="{Binding DisplayGlyph}"
+                                            ValueText="{Binding ValuePercentText}"
+                                            Foreground="{DynamicResource AccentPrimary}"
+                                            EnableAnimations="{Binding DataContext.EnableAnimations, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                            Focusable="False"
+                                            IsTabStop="False">
+                <controls:ExpandableTouchSlider.Template>
+                    <ControlTemplate TargetType="{x:Type controls:ExpandableTouchSlider}">
+                        <Border Background="Transparent"/>
+                    </ControlTemplate>
+                </controls:ExpandableTouchSlider.Template>
+            </controls:ExpandableTouchSlider>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsExpanded, ElementName=MasterVolumeInput}" Value="True">
+                <Setter TargetName="CollapsedVolumeGlyph" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="ExpandedVolumePanel" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Media Widget — 56 DIP tactile hardware transport surface     -->
+    <!--  Layout: [Art] [⏮] [⏸] [⏭] │ Title        2:14 / 4:20      -->
+    <!--                              │ Artist  ━━━━━━━━              -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:MediaItemViewModel}">
+        <Grid x:Name="MediaBorder"
+                Height="56"
+                Margin="2,0"
+                SnapsToDevicePixels="True"
+                Visibility="{Binding Visibility}">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Width" Value="{Binding Width}"/>
+                    <Setter Property="MinWidth" Value="{x:Static vm:MediaItemViewModel.MinimumWidth}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAvailable}" Value="False">
+                            <Setter Property="Width" Value="96"/>
+                            <Setter Property="MinWidth" Value="0"/>
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsAvailable}" Value="False"/>
+                                <Condition Binding="{Binding CollapseWhenUnavailable}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="MinWidth" Value="0"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <!-- Decorative chrome must not subtract from the 56 DIP touch surface. -->
+            <Border Background="{DynamicResource SurfaceControl}"
+                    BorderBrush="{DynamicResource ControlBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                    IsHitTestVisible="False"/>
+            <Grid Margin="7,0,11,0" VerticalAlignment="Center">
+                <!-- Active Media State Panel -->
+                <Grid x:Name="MediaActivePanel">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Album artwork / visual-only fallback -->
+                    <Border x:Name="ArtworkFrame"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource SurfaceControl}"
+                            BorderBrush="{DynamicResource MediaFrameBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            IsHitTestVisible="False"
+                            Focusable="False">
+                        <Grid>
+                            <TextBlock x:Name="ArtworkFallbackGlyph"
+                                       Style="{StaticResource ThemedIconFontStyle}"
+                                       FontSize="15"
+                                       Foreground="{DynamicResource TextMuted}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Focusable="False">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                                        <Binding Source="&#xE8D6;"/>
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <Border x:Name="ArtworkImageLayer"
+                                    Visibility="Collapsed"
+                                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                                    IsHitTestVisible="False"
+                                    Focusable="False">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding Artwork}"
+                                                Stretch="UniformToFill"
+                                                AlignmentX="Center"
+                                                AlignmentY="Center"/>
+                                </Border.Background>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Compact Transport Controls -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,8,0">
+                        <controls:LongPressButton Command="{Binding PreviousCommand}"
+                                                  Style="{StaticResource MediaTransportButtonStyle}"
+                                                  ToolTip="Previous" AutomationProperties.Name="Previous track">
+                            <TextBlock Style="{StaticResource ThemedIconFontStyle}"
+                                       FontSize="12">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                                        <Binding Source="&#xE892;"/>
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </controls:LongPressButton>
+                        <controls:LongPressButton Command="{Binding PlayPauseCommand}"
+                                                  Style="{StaticResource MediaPlayPauseButtonStyle}"
+                                                  ToolTip="{Binding PlayPauseLabel}" AutomationProperties.Name="{Binding PlayPauseLabel}">
+                            <TextBlock Style="{StaticResource ThemedIconFontStyle}"
+                                       FontSize="14">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                                        <Binding Path="PlayPauseGlyph"/>
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </controls:LongPressButton>
+                        <controls:LongPressButton Command="{Binding NextCommand}"
+                                                  Style="{StaticResource MediaTransportButtonStyle}"
+                                                  ToolTip="Next" AutomationProperties.Name="Next track">
+                            <TextBlock Style="{StaticResource ThemedIconFontStyle}"
+                                       FontSize="12">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                                        <Binding Source="&#xE893;"/>
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </controls:LongPressButton>
+                    </StackPanel>
+
+                    <!-- Track Info & Progress Track -->
+                    <Grid Grid.Column="2" Height="56" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" MinWidth="72"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Top row: Title and Position / Duration -->
+                        <Grid Grid.ColumnSpan="2" Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding Title}"
+                                       Foreground="{DynamicResource TextPrimary}"
+                                       FontFamily="{DynamicResource BarFontFamily}"
+                                       FontSize="12"
+                                       FontWeight="{DynamicResource BarFontWeight}"
+                                       TextTrimming="CharacterEllipsis"
+                                       ToolTip="{Binding Title}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,6,0"/>
+
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextMuted}"
+                                       FontFamily="{DynamicResource BarFontFamily}"
+                                       FontSize="10">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} / {1}">
+                                        <Binding Path="PositionText"/>
+                                        <Binding Path="DurationText"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Grid>
+
+                        <!-- Bottom row: Artist and Thin Progress Track -->
+                        <TextBlock Grid.Row="1" Text="{Binding Artist}"
+                                       Foreground="{DynamicResource TextSecondary}"
+                                       FontFamily="{DynamicResource BarFontFamily}"
+                                       FontSize="10"
+                                       TextTrimming="CharacterEllipsis"
+                                       ToolTip="{Binding Artist}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+
+                        <ProgressBar Grid.Row="1" Grid.Column="1" IsHitTestVisible="False" Style="{StaticResource FlexProgressBarStyle}"
+                                             Foreground="{DynamicResource ActiveAccentBrush}"
+                                             Minimum="0"
+                                             Maximum="100"
+                                             Value="{Binding ProgressPercent, Mode=OneWay}"/>
+                        <!-- The hit area shares the visible track's X range and spans the full bar height. -->
+                        <controls:TouchSlider Grid.Column="1" Grid.RowSpan="2" AutomationProperties.Name="Playback position" Style="{StaticResource FlexSliderStyle}"
+                                                      Height="56"
+                                                      Opacity="0"
+                                                      Minimum="0"
+                                                      Maximum="100"
+                                                      Value="{Binding ProgressPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      IsInteracting="{Binding IsSeeking, Mode=TwoWay}"/>
+                    </Grid>
+                </Grid>
+
+                <!-- Empty State Panel (when IsAvailable == false) -->
+                <Grid x:Name="MediaEmptyPanel" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="4,0">
+                        <TextBlock Style="{StaticResource ThemedIconFontStyle}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                                    <Binding Source="&#xE768;"/>
+                                    <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="No media"
+                                   FontFamily="{DynamicResource BarFontFamily}"
+                                   FontSize="11"
+                                   FontWeight="Medium"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasArtwork}" Value="True">
+                <Setter TargetName="ArtworkFallbackGlyph" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="ArtworkImageLayer" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsAvailable}" Value="False">
+                <Setter TargetName="MediaActivePanel" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="MediaEmptyPanel" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsAvailable}" Value="False"/>
+                    <Condition Binding="{Binding CollapseWhenUnavailable}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="MediaEmptyPanel" Property="Visibility" Value="Collapsed"/>
+            </MultiDataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Decorative Media Widget                                    -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:DecorativeMediaItemViewModel}">
+        <controls:DecorativeMediaView Width="{Binding Width}"
+                                      Height="56"
+                                      Source="{Binding ResolvedSource}"
+                                      Fit="{Binding Fit}"
+                                      Loop="{Binding Loop}"
+                                      MediaOpacity="{Binding Opacity}"
+                                      MediaEnabled="{Binding Enabled}"
+                                      MotionEnabled="{Binding DataContext.BackgroundMediaMotionEnabled, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=False}"
+                                      HorizontalOffset="{Binding HorizontalOffset}"
+                                      VerticalOffset="{Binding VerticalOffset}"
+                                      Zoom="{Binding Zoom}"
+                                      ClipToBounds="{Binding ClipToBounds}"
+                                      ShowDiagnostics="{Binding ShowDiagnostics}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Spacer Widget — 56 DIP layout separator                     -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:SpacerItemViewModel}">
+        <Border Width="{Binding Width}" Height="56" Background="Transparent"/>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Dynamic List Widget — host for runtime dynamic item list    -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:DynamicListItemViewModel}">
+        <ItemsControl ItemsSource="{Binding Items}"
+                      Visibility="{Binding Visibility}"
+                      Focusable="False"
+                      IsTabStop="False"
+                      VerticalAlignment="Center">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Toggle Widget — 56 DIP tactile toggle pill                  -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:ToggleItemViewModel}">
+        <Grid Margin="2,0" Height="56">
+            <controls:LongPressButton
+                x:Name="ToggleBtn"
+                IsChecked="{Binding IsChecked, Mode=OneWay}"
+                Style="{StaticResource FlexPillButtonStyle}"
+                Width="{Binding Width}"
+                Height="56"
+                ToolTip="{Binding DisplayLabel}"
+                AutomationProperties.Name="{Binding DisplayLabel}"
+                Command="{Binding ToggleCommand}"
+                SecondaryCommand="{Binding SecondaryCommand}"
+                LongPressMilliseconds="{Binding LongPressMilliseconds}">
+                <ContentControl Content="{Binding}"
+                                ContentTemplate="{StaticResource BarIconPresentationTemplate}"
+                                FontSize="16"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                IsHitTestVisible="False"/>
+            </controls:LongPressButton>
+            <!-- Secondary-action indicator pill badge if configured -->
+            <Border Width="12"
+                    Height="3"
+                    CornerRadius="{DynamicResource ProgressBarCornerRadius}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,8,6"
+                    Background="{DynamicResource AccentPrimary}"
+                    Visibility="{Binding HasSecondaryAction, Converter={StaticResource BoolToVisibility}}"
+                    IsHitTestVisible="False"/>
+            <!-- Pixel HUD LED indicator block (visible only in Pixel preset) -->
+            <Border x:Name="ToggleLed"
+                    Width="6"
+                    Height="6"
+                    CornerRadius="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,6,7,0"
+                    Background="{DynamicResource SurfaceControl}"
+                    BorderBrush="{DynamicResource PixelOutlineBrush}"
+                    BorderThickness="1"
+                    Visibility="{DynamicResource ToggleLedVisibility}"
+                    IsHitTestVisible="False"/>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                <Setter TargetName="ToggleBtn" Property="Background"
+                        Value="{DynamicResource ToggleActiveBackground}"/>
+                <Setter TargetName="ToggleBtn" Property="BorderBrush"
+                        Value="{DynamicResource ActiveAccentBrush}"/>
+                <Setter TargetName="ToggleBtn" Property="Foreground"
+                        Value="{DynamicResource ToggleActiveForeground}"/>
+                <Setter TargetName="ToggleLed" Property="Background"
+                        Value="{DynamicResource ToggleLedActiveBrush}"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  MultiState Widget — cycling multi-state touch pill          -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:MultiStateItemViewModel}">
+        <Grid Margin="2,0" Height="56">
+            <controls:LongPressButton
+                Style="{StaticResource FlexPillButtonStyle}"
+                Width="{Binding Width}"
+                Height="56"
+                ToolTip="{Binding DisplayLabel}"
+                AutomationProperties.Name="{Binding DisplayLabel}"
+                Command="{Binding CycleCommand}">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="StateGlyph"
+                               Style="{StaticResource ThemedDisplayGlyphStyle}"
+                               FontSize="16"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"/>
+                    <TextBlock x:Name="StateLabel"
+                               Tag="{DynamicResource IsPixelPreset}"
+                               FontFamily="{DynamicResource CommandFontFamily}"
+                               FontSize="12"
+                               FontWeight="{DynamicResource CommandFontWeight}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"
+                               Visibility="Visible">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource CommandLabelConverter}">
+                                <Binding Path="DisplayLabel"/>
+                                <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </controls:LongPressButton>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasGlyph}" Value="True">
+                <Setter TargetName="StateGlyph" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="StateLabel" Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Sensor Widget — 56 DIP calm metric readout well             -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:SensorItemViewModel}">
+        <Border x:Name="SensorRoot"
+                Tag="{DynamicResource IsPixelPreset}"
+                MinWidth="{Binding Width}"
+                HorizontalAlignment="Left"
+                Height="56"
+                Margin="2,0"
+                Background="{DynamicResource SurfaceContainer}"
+                BorderBrush="{DynamicResource ControlBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="{DynamicResource ControlCornerRadius}"
+                ToolTip="{Binding Label}"
+                AutomationProperties.Name="{Binding Label}"
+                SnapsToDevicePixels="True">
+            <Grid VerticalAlignment="Center">
+                <Border BorderThickness="1,1,0,0"
+                        BorderBrush="{DynamicResource PixelHighlightBrush}"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        IsHitTestVisible="False"/>
+                <Border BorderThickness="0,0,1,1"
+                        BorderBrush="{DynamicResource PixelShadowBrush}"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        IsHitTestVisible="False"/>
+                <Grid Margin="10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Semantic Sensor Icon (CPU, Temp, GPU, RAM, Fan, etc.) -->
+                    <ContentControl Grid.Column="0"
+                                    x:Name="SensorGlyphIcon"
+                                    Content="{Binding}"
+                                    ContentTemplate="{StaticResource BarIconPresentationTemplate}"
+                                    FontSize="14"
+                                    Foreground="{DynamicResource SensorIconForeground}"
+                                    VerticalContentAlignment="Center"
+                                    Margin="0,0,6,0"
+                                    IsHitTestVisible="False"/>
+                    <Path Grid.Column="0"
+                          x:Name="PixelSensorIcon"
+                          Width="24"
+                          Height="24"
+                          Margin="0,0,6,0"
+                          Stretch="None"
+                          Fill="{DynamicResource SensorIconForeground}"
+                          Visibility="Collapsed"
+                          SnapsToDevicePixels="True"
+                          RenderOptions.EdgeMode="Aliased"
+                          IsHitTestVisible="False"/>
+                    <!-- Metric Readout Value with Unit -->
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ValueText}"
+                               FontFamily="{DynamicResource BarFontFamily}"
+                               FontSize="13"
+                               FontWeight="{DynamicResource BarFontWeight}"
+                               Foreground="{DynamicResource TextPrimary}"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, ElementName=SensorRoot}" Value="True"/>
+                    <Condition Binding="{Binding DisplayGlyph}" Value="&#xE950;"/>
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="SensorGlyphIcon" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="PixelSensorIcon" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="PixelSensorIcon" Property="Data" Value="{StaticResource PixelCpuIcon}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, ElementName=SensorRoot}" Value="True"/>
+                    <Condition Binding="{Binding DisplayGlyph}" Value="&#xE7F4;"/>
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="SensorGlyphIcon" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="PixelSensorIcon" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="PixelSensorIcon" Property="Data" Value="{StaticResource PixelGpuIcon}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, ElementName=SensorRoot}" Value="True"/>
+                    <Condition Binding="{Binding DisplayGlyph}" Value="&#xE7A3;"/>
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="SensorGlyphIcon" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="PixelSensorIcon" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="PixelSensorIcon" Property="Data" Value="{StaticResource PixelTemperatureIcon}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Tag, ElementName=SensorRoot}" Value="True"/>
+                    <Condition Binding="{Binding DisplayGlyph}" Value="&#xE964;"/>
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="SensorGlyphIcon" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="PixelSensorIcon" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="PixelSensorIcon" Property="Data" Value="{StaticResource PixelMemoryIcon}"/>
+            </MultiDataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ============================================================ -->
+    <!--  Audio Application Session Widget — 56 DIP app mixer pill    -->
+    <!--  Layout: [ App Icon + Name ]  [ ━━━━🔘━━━ ]  [ 72% ]  [ 🔊 ]  -->
+    <!-- ============================================================ -->
+
+    <DataTemplate DataType="{x:Type vm:AudioSessionItemViewModel}">
+        <Grid Width="{Binding Width}"
+                MinWidth="280"
+                Height="56"
+                Margin="2,0"
+                ToolTip="{Binding Label}"
+                AutomationProperties.Name="{Binding Label}"
+                SnapsToDevicePixels="True">
+            <Border Background="{DynamicResource SurfaceControl}"
+                    BorderBrush="{DynamicResource ControlBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                    IsHitTestVisible="False"/>
+            <Grid Margin="11,0,7,0" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MaxWidth="92"/>
+                    <ColumnDefinition Width="*" MinWidth="72"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- App Icon + Secondary Process Name -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0">
+                    <TextBlock Style="{StaticResource ThemedIconFontStyle}"
+                               FontSize="14"
+                               Foreground="{DynamicResource AccentPrimary}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,6,0">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource PixelGlyphConverter}">
+                                <Binding Path="AppGlyph"/>
+                                <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Label}"
+                               FontFamily="{DynamicResource BarFontFamily}"
+                               FontSize="11"
+                               FontWeight="{DynamicResource BarFontWeight}"
+                               TextTrimming="CharacterEllipsis"
+                               Foreground="{DynamicResource TextPrimary}"
+                               VerticalAlignment="Center"
+                               MaxWidth="66"/>
+                </StackPanel>
+
+                <!-- Interactive Track Slider -->
+                <controls:TouchSlider AutomationProperties.Name="{Binding Label}" Grid.Column="1"
+                                      Style="{StaticResource FlexSliderStyle}"
+                                      Height="56"
+                                      Foreground="{DynamicResource AccentPrimary}"
+                                      Minimum="{Binding Minimum}"
+                                      Maximum="{Binding Maximum}"
+                                      IsInteracting="{Binding IsInteracting, Mode=TwoWay}"
+                                      Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!-- Percentage Display -->
+                <TextBlock Grid.Column="2"
+                           Text="{Binding ValuePercentText}"
+                           FontFamily="{DynamicResource BarFontFamily}"
+                           FontSize="10"
+                           FontWeight="Medium"
+                           Width="30"
+                           TextAlignment="Right"
+                           Foreground="{DynamicResource TextMuted}"
+                           VerticalAlignment="Center"
+                           Margin="4,0,2,0"/>
+
+                <!-- Touch Mute Button -->
+                <controls:LongPressButton Grid.Column="3"
+                                          x:Name="MuteButton"
+                                          Command="{Binding ToggleMuteCommand}"
+                                          IsChecked="{Binding IsMuted, Mode=OneWay}"
+                                          ToolTip="Mute / Unmute" AutomationProperties.Name="{Binding Label, StringFormat='Mute {0}'}"
+                                          Width="56"
+                                          Height="56"
+                                          Margin="2,0,0,0"
+                                          Background="Transparent"
+                                          BorderThickness="1"
+                                          BorderBrush="Transparent"
+                                          Focusable="False"
+                                          IsTabStop="False">
+                    <controls:LongPressButton.Template>
+                        <ControlTemplate TargetType="{x:Type controls:LongPressButton}">
+                            <Border x:Name="MuteBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="7"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="MuteBorder" Property="Background" Value="{DynamicResource SurfaceControlHover}"/>
+                                    <Setter TargetName="MuteBorder" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="MuteBorder" Property="Background" Value="{DynamicResource SurfaceControlPressed}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </controls:LongPressButton.Template>
+                    <TextBlock x:Name="MuteGlyph"
+                               Style="{StaticResource ThemedDisplayGlyphStyle}"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextSecondary}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </controls:LongPressButton>
+            </Grid>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                <Setter TargetName="MuteButton" Property="Background" Value="#25FF5C5C"/>
+                <Setter TargetName="MuteButton" Property="BorderBrush" Value="{DynamicResource StatusError}"/>
+                <Setter TargetName="MuteGlyph" Property="Foreground" Value="{DynamicResource StatusError}"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+</ResourceDictionary>

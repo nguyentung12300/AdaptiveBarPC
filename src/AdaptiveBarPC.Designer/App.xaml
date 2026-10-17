@@ -1,0 +1,685 @@
+<Application x:Class="AdaptiveBarPC.Designer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/AdaptiveBarPC;component/Resources/Branding.xaml"/>
+                <ResourceDictionary Source="/AdaptiveBarPC;component/Resources/ThemeTokens.xaml"/>
+                <ResourceDictionary Source="/AdaptiveBarPC;component/Resources/BarControls.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- ============================================================ -->
+            <!--  Designer Workspace Semantic Brushes                         -->
+            <!-- ============================================================ -->
+            <SolidColorBrush x:Key="EditorBackground" Color="#FF11161B"/>
+            <SolidColorBrush x:Key="EditorPanel" Color="#FF181D22"/>
+            <SolidColorBrush x:Key="EditorPanelRaised" Color="#FF1D2329"/>
+            <SolidColorBrush x:Key="EditorInput" Color="#FF1B2127"/>
+            <SolidColorBrush x:Key="EditorBorder" Color="#FF343B43"/>
+            <SolidColorBrush x:Key="EditorBorderFocus" Color="#FF9F87FF"/>
+            <LinearGradientBrush x:Key="EditorSelection" StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Color="#FF302951" Offset="0"/><GradientStop Color="#FF25273E" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="EditorMaterial" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF1E242A" Offset="0"/><GradientStop Color="#FF181D22" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="EditorError" Color="#FFFF6B6B"/>
+            <SolidColorBrush x:Key="EditorErrorText" Color="#FFFFA5AC"/>
+            <SolidColorBrush x:Key="EditorWarning" Color="#FFFFC857"/>
+            <SolidColorBrush x:Key="EditorPrimaryBackground" Color="#FF6242E8"/>
+            <SolidColorBrush x:Key="EditorPrimaryHover" Color="#FF7052EF"/>
+            <SolidColorBrush x:Key="EditorPrimaryPressed" Color="#FF5335CD"/>
+
+            <SolidColorBrush x:Key="EditorAccentText" Color="#FFC2B3FF"/>
+            <!-- Workspace text stays legible independently of the preview theme. -->
+            <SolidColorBrush x:Key="TextMuted" Color="#FFADB8CA"/>
+
+            <!-- Subtle studio dot-grid canvas brush -->
+            <DrawingBrush x:Key="WorkbenchGridBrush" TileMode="Tile" Viewport="0,0,16,16" ViewportUnits="Absolute">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="#FF101419">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,16,16"/>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#20FFFFFF">
+                            <GeometryDrawing.Geometry>
+                                <EllipseGeometry Center="8,8" RadiusX="0.65" RadiusY="0.65"/>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}" TargetType="Control">
+                <Setter Property="Template"><Setter.Value><ControlTemplate>
+                    <Rectangle Stroke="{StaticResource EditorAccentText}" StrokeThickness="2" StrokeDashArray="2,1" Margin="2" RadiusX="6" RadiusY="6" IsHitTestVisible="False"/>
+                </ControlTemplate></Setter.Value></Setter>
+            </Style>
+
+            <Style TargetType="ContextMenu">
+                <Setter Property="Background" Value="{StaticResource EditorPanelRaised}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource EditorBorder}"/>
+            </Style>
+            <Style TargetType="MenuItem">
+                <Setter Property="MinHeight" Value="34"/>
+                <Setter Property="Padding" Value="16,8"/>
+                <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="MenuRoot" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="6">
+                        <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="MenuRoot" Property="Background" Value="{StaticResource EditorSelection}"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate></Setter.Value></Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Dark Slim ScrollBar & ScrollViewer                          -->
+            <!-- ============================================================ -->
+            <Style TargetType="ScrollBar">
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                <Style.Triggers>
+                    <Trigger Property="Orientation" Value="Horizontal">
+                        <Setter Property="Height" Value="8"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ScrollBar">
+                                    <Grid Background="Transparent">
+                                        <Track x:Name="PART_Track" IsDirectionReversed="False">
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Command="ScrollBar.LineLeftCommand" Opacity="0" Focusable="False"/>
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb>
+                                                    <Thumb.Template>
+                                                        <ControlTemplate TargetType="Thumb">
+                                                            <Border x:Name="ThumbBorder" Background="#30FFFFFF" CornerRadius="4" Margin="0,1"/>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="#55FFFFFF"/>
+                                                                </Trigger>
+                                                                <Trigger Property="IsDragging" Value="True">
+                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="#80FFFFFF"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Thumb.Template>
+                                                </Thumb>
+                                            </Track.Thumb>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Command="ScrollBar.LineRightCommand" Opacity="0" Focusable="False"/>
+                                            </Track.IncreaseRepeatButton>
+                                        </Track>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="Orientation" Value="Vertical">
+                        <Setter Property="Width" Value="8"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ScrollBar">
+                                    <Grid Background="Transparent">
+                                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" Focusable="False"/>
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb>
+                                                    <Thumb.Template>
+                                                        <ControlTemplate TargetType="Thumb">
+                                                            <Border x:Name="ThumbBorder" Background="#30FFFFFF" CornerRadius="4" Margin="1,0"/>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="#55FFFFFF"/>
+                                                                </Trigger>
+                                                                <Trigger Property="IsDragging" Value="True">
+                                                                    <Setter TargetName="ThumbBorder" Property="Background" Value="#80FFFFFF"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Thumb.Template>
+                                                </Thumb>
+                                            </Track.Thumb>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" Focusable="False"/>
+                                            </Track.IncreaseRepeatButton>
+                                        </Track>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Primary Action Button (Save, Insert)                        -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorPrimaryButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource EditorPrimaryBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource AccentGlow}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="14,6"/>
+                <Setter Property="MinHeight" Value="40"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource EditorPrimaryHover}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource EditorPrimaryPressed}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.38"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Standard Workbench Button                                   -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource EditorPanelRaised}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource EditorBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="12,5"/>
+                <Setter Property="MinHeight" Value="40"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource ControlHover}"/>
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#38FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource ControlPressed}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.38"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Secondary Movement/Utility Button                           -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorSecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource EditorButtonStyle}">
+                <Setter Property="Foreground" Value="{StaticResource SecondaryText}"/>
+                <Setter Property="Padding" Value="10,4"/>
+                <Setter Property="MinHeight" Value="40"/>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Destructive Action Button (Delete)                          -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorDestructiveButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#12FF5C5C"/>
+                <Setter Property="Foreground" Value="#FFFF8A8A"/>
+                <Setter Property="BorderBrush" Value="#2EFF5C5C"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="10,4"/>
+                <Setter Property="MinHeight" Value="40"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#25FF5C5C"/>
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#60FF5C5C"/>
+                                    <Setter Property="Foreground" Value="#FFFF9999"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#45FF5C5C"/>
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#88FF5C5C"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.38"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Editor Picker Dropdown Button Style                         -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorPickerButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource EditorInput}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource EditorBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="MinHeight" Value="40"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#40FFFFFF"/>
+                                    <Setter TargetName="Root" Property="Background" Value="#FF24242E"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#FF1E1E26"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Editor Icon Tile Button Style                               -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorIconTileStyle" TargetType="Button">
+                <Setter Property="Width" Value="56"/>
+                <Setter Property="Height" Value="56"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Background" Value="#0AFFFFFF"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="TileBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="TileBorder" Property="Background" Value="#25FFFFFF"/>
+                                    <Setter TargetName="TileBorder" Property="BorderBrush" Value="{StaticResource EditorBorder}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="TileBorder" Property="Background" Value="{StaticResource AccentSubtle}"/>
+                                    <Setter TargetName="TileBorder" Property="BorderBrush" Value="{StaticResource AccentPrimary}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource EditorAccentText}"/>
+                                </Trigger>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter TargetName="TileBorder" Property="Background" Value="{StaticResource AccentSubtle}"/>
+                                    <Setter TargetName="TileBorder" Property="BorderBrush" Value="{StaticResource AccentPrimary}"/>
+                                    <Setter TargetName="TileBorder" Property="BorderThickness" Value="1.5"/>
+                                    <Setter Property="Foreground" Value="{StaticResource EditorAccentText}"/>
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Dark Theme TextBox                                          -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorTextBoxStyle" TargetType="TextBox">
+                <Setter Property="Background" Value="{StaticResource EditorInput}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource EditorBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="MinHeight" Value="42"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="CaretBrush" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}"
+                                    CornerRadius="8">
+                                <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#38FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource AccentPrimary}"/>
+                                    <Setter TargetName="Root" Property="Background" Value="#FF24242D"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Root" Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Dark Theme ComboBox & Dropdown                              -->
+            <!-- ============================================================ -->
+            <Style TargetType="ComboBoxItem">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="10,6"/>
+                <Setter Property="MinHeight" Value="34"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBoxItem">
+                            <Border x:Name="ItemBorder"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="4"
+                                    Margin="2,1"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ItemBorder" Property="Background" Value="#1FFFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource EditorSelection}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource EditorAccentText}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="EditorComboBoxStyle" TargetType="ComboBox">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="Background" Value="{StaticResource EditorInput}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource EditorBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="MinHeight" Value="42"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBox">
+                            <Grid>
+                                <ToggleButton x:Name="ToggleButton"
+                                              Focusable="False"
+                                              Background="{TemplateBinding Background}"
+                                              BorderBrush="{TemplateBinding BorderBrush}"
+                                              BorderThickness="{TemplateBinding BorderThickness}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border x:Name="Border"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="8">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Path Grid.Column="1"
+                                                          Data="M 0 0 L 4 4 L 8 0"
+                                                          Stroke="{StaticResource SecondaryText}"
+                                                          StrokeThickness="1.5"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,10,0"/>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Border" Property="BorderBrush" Value="#38FFFFFF"/>
+                                                </Trigger>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource AccentPrimary}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                                <ContentPresenter IsHitTestVisible="False"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"/>
+                                <Popup x:Name="PART_Popup"
+                                       AllowsTransparency="True"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       Placement="Bottom"
+                                       PopupAnimation="None"
+                                       Focusable="False">
+                                    <Border x:Name="DropDownBorder"
+                                            MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                            MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                            Background="{StaticResource EditorPanelRaised}"
+                                            BorderBrush="{StaticResource EditorBorder}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="2"
+                                            Margin="0,2,0,0">
+                                        <ScrollViewer SnapsToDevicePixels="True"
+                                                      HorizontalScrollBarVisibility="Disabled"
+                                                      VerticalScrollBarVisibility="Auto">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Implicit ComboBox uses EditorComboBoxStyle -->
+            <Style TargetType="ComboBox" BasedOn="{StaticResource EditorComboBoxStyle}"/>
+
+            <!-- ============================================================ -->
+            <!--  Dark Theme CheckBox                                         -->
+            <!-- ============================================================ -->
+            <Style TargetType="CheckBox">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CheckBox">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border x:Name="Box"
+                                        Width="16" Height="16"
+                                        Background="{StaticResource EditorInput}"
+                                        BorderBrush="{StaticResource EditorBorder}"
+                                        BorderThickness="1"
+                                        CornerRadius="3"
+                                        VerticalAlignment="Center">
+                                    <Path x:Name="CheckMark"
+                                          Data="M 3 8 L 6.5 11.5 L 13 4"
+                                          Stroke="White"
+                                          StrokeThickness="1.8"
+                                          Visibility="Collapsed"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                                </Border>
+                                <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Box" Property="Background" Value="{StaticResource AccentPrimary}"/>
+                                    <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentPrimary}"/>
+                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Box" Property="BorderBrush" Value="#45FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ============================================================ -->
+            <!--  Dark Theme ListBox & ListBoxItem                            -->
+            <!-- ============================================================ -->
+            <Style x:Key="EditorListBoxStyle" TargetType="ListBox">
+                <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            </Style>
+
+            <Style x:Key="EditorListItemStyle" TargetType="ListBoxItem">
+                <Setter Property="MinHeight" Value="42"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="Margin" Value="2,0"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Grid>
+                                <Border x:Name="Root"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="8"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter VerticalAlignment="Center"/>
+                                </Border>
+                                <Border x:Name="ActiveIndicator"
+                                        Width="4"
+                                        HorizontalAlignment="Left"
+                                        CornerRadius="1.5"
+                                        Background="{StaticResource AccentPrimary}"
+                                        Visibility="Collapsed"
+                                        Margin="1,3"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource EditorBorderFocus}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#14FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource EditorSelection}"/>
+                                    <Setter TargetName="ActiveIndicator" Property="Visibility" Value="Visible"/>
+                                    <Setter Property="Foreground" Value="#FFFFFFFF"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

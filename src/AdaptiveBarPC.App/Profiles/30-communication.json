@@ -1,0 +1,119 @@
+{
+  "id": "communication",
+  "displayName": "Communication",
+  "priority": 20,
+  "theme": {
+    "background": "#FF0F1117",
+    "tileBackground": "#FF1C202E",
+    "accent": "#FF5865F2",
+    "primaryText": "#E6F2F3F5",
+    "secondaryText": "#80949BA4"
+  },
+  "match": {
+    "processNames": [],
+    "category": "communication"
+  },
+  "pages": [
+    {
+      "id": "main",
+      "displayName": "Main",
+      "items": [
+        {
+          "type": "media",
+          "label": "Media",
+          "width": 0,
+          "collapseWhenUnavailable": true,
+          "autoCollapse": true
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "displayName": "System",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "provider": "hardware",
+          "emptyBehavior": "collapse",
+          "maxItems": 6,
+          "width": 0
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "mixer",
+      "displayName": "Mixer",
+      "items": [
+        {
+          "type": "dynamiclist",
+          "provider": "audioSessions",
+          "emptyBehavior": "default",
+          "width": 0
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    }
+  ]
+}

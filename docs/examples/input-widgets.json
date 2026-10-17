@@ -1,0 +1,18 @@
+{
+  "inputItems": [
+    {
+      "type": "text_slot",
+      "id": "email-slot",
+      "label": "Email",
+      "width": 112,
+      "action": { "type": "clipboard_text", "value": "hello@example.com" }
+    },
+    {
+      "type": "sticker",
+      "id": "wave-sticker",
+      "label": "Wave",
+      "width": 72,
+      "source": "Assets/stickers/wave.png"
+    }
+  ]
+}

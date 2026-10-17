@@ -1,0 +1,28 @@
+# .NET 8 / WPF build output
+**/bin/
+**/obj/
+**/TestResults/
+.vs/
+.idea/
+*.user
+*.suo
+*.cache
+*.log
+/obj_old/
+
+# Internal AI configuration
+.agent/
+.agents/
+.codex/
+.grok/
+.impeccable/
+.gemini/
+/AGENTS.md
+/CODEX_CONTEXT.md
+/CODEX_RULES.md
+/skills-lock.json
+/artifacts/
+/tasks/
+
+# Local generated runtime output
+.codex-runtime/

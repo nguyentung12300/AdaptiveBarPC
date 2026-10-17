@@ -1,0 +1,92 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ============================================================ -->
+    <!--  AdaptiveBarPC — Fluid Hardware Surface Design Tokens            -->
+    <!-- ============================================================ -->
+
+    <!-- Surfaces -->
+    <SolidColorBrush x:Key="SurfaceBase"           Color="#FF0A0A0D"/>
+    <SolidColorBrush x:Key="SurfaceContainer"      Color="#FF121217"/>
+    <SolidColorBrush x:Key="SurfaceControl"        Color="#FF1C1C24"/>
+    <SolidColorBrush x:Key="SurfaceControlHover"   Color="#FF282834"/>
+    <SolidColorBrush x:Key="SurfaceControlPressed" Color="#FF343444"/>
+    <SolidColorBrush x:Key="SurfaceElevated"       Color="#FF20202A"/>
+
+    <!-- Accent -->
+    <SolidColorBrush x:Key="AccentPrimary"         Color="#FF7C5CFC"/>
+    <SolidColorBrush x:Key="AccentSecondary"       Color="#FF7C5CFC"/>
+    <SolidColorBrush x:Key="AccentSubtle"          Color="#247C5CFC"/>
+    <SolidColorBrush x:Key="AccentGlow"            Color="#407C5CFC"/>
+    <SolidColorBrush x:Key="ActiveAccentBrush"     Color="#FF7C5CFC"/>
+
+    <!-- Geometry -->
+    <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+    <CornerRadius x:Key="SurfaceCornerRadius">12</CornerRadius>
+    <CornerRadius x:Key="ShellCornerRadius">14</CornerRadius>
+    <CornerRadius x:Key="SliderThumbCornerRadius">8</CornerRadius>
+    <Thickness x:Key="PixelButtonFaceMargin">0</Thickness>
+
+    <!-- Pixel Retro HUD Tokens (default transparent/fluid) -->
+    <SolidColorBrush x:Key="PixelOutlineBrush"     Color="Transparent"/>
+    <SolidColorBrush x:Key="PixelHighlightBrush"   Color="Transparent"/>
+    <SolidColorBrush x:Key="PixelShadowBrush"      Color="Transparent"/>
+    <SolidColorBrush x:Key="SliderTrackBackgroundBrush" Color="#FF121217"/>
+    <SolidColorBrush x:Key="SliderTrackForegroundBrush" Color="#FF7C5CFC"/>
+    <Thickness x:Key="ButtonPressMargin">0</Thickness>
+    <sys:Double x:Key="ButtonPressScale">0.97</sys:Double>
+    <sys:Double x:Key="SliderTrackHeight">6.0</sys:Double>
+    <CornerRadius x:Key="SliderTrackCornerRadius">3</CornerRadius>
+    <SolidColorBrush x:Key="SliderTrackBorderBrush" Color="#18FFFFFF"/>
+    <sys:Double x:Key="ProgressBarHeight">3.0</sys:Double>
+    <CornerRadius x:Key="ProgressBarCornerRadius">1.5</CornerRadius>
+    <SolidColorBrush x:Key="ProgressBarTrackBrush" Color="#18FFFFFF"/>
+    <SolidColorBrush x:Key="ToggleActiveBackground" Color="#247C5CFC"/>
+    <SolidColorBrush x:Key="ToggleActiveForeground" Color="#FFF5F5F7"/>
+    <Visibility x:Key="ToggleLedVisibility">Collapsed</Visibility>
+    <SolidColorBrush x:Key="SliderThumbAccentBrush" Color="#FF7C5CFC"/>
+    <SolidColorBrush x:Key="ToggleLedActiveBrush"  Color="#FF7C5CFC"/>
+    <FontFamily x:Key="BarFontFamily">Segoe UI Variable, Segoe UI</FontFamily>
+    <FontFamily x:Key="CommandFontFamily">Segoe UI Variable, Segoe UI</FontFamily>
+    <FontFamily x:Key="IconFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol</FontFamily>
+    <FontWeight x:Key="BarFontWeight">SemiBold</FontWeight>
+    <FontWeight x:Key="CommandFontWeight">SemiBold</FontWeight>
+    <sys:Boolean x:Key="IsPixelPreset">False</sys:Boolean>
+    <x:Static x:Key="IconBitmapScalingMode" Member="BitmapScalingMode.Linear"/>
+
+    <!-- Text Hierarchy -->
+    <SolidColorBrush x:Key="TextPrimary"           Color="#FFF5F5F7"/>
+    <SolidColorBrush x:Key="TextSecondary"         Color="#FFA1A1AA"/>
+    <SolidColorBrush x:Key="TextTertiary"          Color="#FF71717A"/>
+    <SolidColorBrush x:Key="TextMuted"             Color="#FF71717A"/>
+
+    <!-- Outlines & Dividers -->
+    <SolidColorBrush x:Key="StrokeSubtle"          Color="#18FFFFFF"/>
+    <SolidColorBrush x:Key="StrokeStrong"          Color="#28FFFFFF"/>
+    <SolidColorBrush x:Key="Divider"               Color="#1AFFFFFF"/>
+    <SolidColorBrush x:Key="ControlBorderBrush"    Color="#18FFFFFF"/>
+    <SolidColorBrush x:Key="ShellBorderBrush"      Color="#18FFFFFF"/>
+    <SolidColorBrush x:Key="MediaFrameBrush"       Color="#18FFFFFF"/>
+    <sys:Boolean x:Key="AppearanceMotionActive">False</sys:Boolean>
+
+    <!-- Status -->
+    <SolidColorBrush x:Key="StatusError"           Color="#FFFF5C5C"/>
+    <SolidColorBrush x:Key="StatusWarning"         Color="#FFFFB020"/>
+    <SolidColorBrush x:Key="StatusSuccess"         Color="#FF34D399"/>
+
+    <!-- ============================================================ -->
+    <!--  Backward-compatible aliases for existing runtime XAML keys  -->
+    <!-- ============================================================ -->
+    <SolidColorBrush x:Key="BarBackground"         Color="#FF0A0A0D"/>
+    <SolidColorBrush x:Key="ControlWell"           Color="#FF121217"/>
+    <SolidColorBrush x:Key="TileBackground"        Color="#FF1C1C24"/>
+    <SolidColorBrush x:Key="ControlSurface"        Color="#FF1C1C24"/>
+    <SolidColorBrush x:Key="ControlHover"          Color="#FF282834"/>
+    <SolidColorBrush x:Key="TilePressed"           Color="#FF343444"/>
+    <SolidColorBrush x:Key="ControlPressed"        Color="#FF343444"/>
+    <SolidColorBrush x:Key="AccentBrush"           Color="#FF7C5CFC"/>
+    <SolidColorBrush x:Key="PrimaryText"           Color="#FFF5F5F7"/>
+    <SolidColorBrush x:Key="SecondaryText"         Color="#FFA1A1AA"/>
+
+</ResourceDictionary>

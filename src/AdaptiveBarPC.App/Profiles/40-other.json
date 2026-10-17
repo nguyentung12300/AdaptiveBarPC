@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "id": "other",
+  "displayName": "Other Apps",
+  "priority": 0,
+  "isDefault": true,
+  "match": {
+    "processNames": [],
+    "executablePaths": [],
+    "categories": []
+  },
+  "fixedLeft": [],
+  "fixedRight": [],
+  "pages": [
+    {
+      "id": "main",
+      "displayName": "Main",
+      "items": [
+        {
+          "id": "other-media",
+          "type": "media",
+          "label": "Media",
+          "width": 0,
+          "collapseWhenUnavailable": true,
+          "autoCollapse": true
+        },
+        {
+          "id": "other-volume",
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "id": "other-mute",
+          "type": "button",
+          "label": "Mute",
+          "icon": {
+            "kind": "glyph",
+            "value": "E74F"
+          },
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "displayName": "System",
+      "items": [
+        {
+          "id": "other-hardware",
+          "type": "dynamiclist",
+          "provider": "hardware",
+          "emptyBehavior": "collapse",
+          "maxItems": 6,
+          "width": 0
+        },
+        {
+          "id": "other-system-volume",
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "id": "other-system-mute",
+          "type": "button",
+          "label": "Mute",
+          "icon": {
+            "kind": "glyph",
+            "value": "E74F"
+          },
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    },
+    {
+      "id": "mixer",
+      "displayName": "Mixer",
+      "items": [
+        {
+          "id": "other-audio-sessions",
+          "type": "dynamiclist",
+          "provider": "audioSessions",
+          "emptyBehavior": "default",
+          "width": 0
+        },
+        {
+          "id": "other-mixer-volume",
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 180,
+          "min": 0,
+          "max": 100,
+          "action": {
+            "type": "volume"
+          },
+          "system": true
+        },
+        {
+          "id": "other-mixer-mute",
+          "type": "button",
+          "label": "Mute",
+          "icon": {
+            "kind": "glyph",
+            "value": "E74F"
+          },
+          "width": 60,
+          "action": {
+            "type": "media",
+            "value": "mute"
+          },
+          "system": true
+        }
+      ]
+    }
+  ],
+  "theme": {
+    "background": "#FF0E0E11",
+    "tileBackground": "#FF222228",
+    "accent": "#FF7C5CFC",
+    "primaryText": "#E6F5F5F7",
+    "secondaryText": "#80F5F5F7"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "id": "premiere",
+  "displayName": "Premiere",
+  "priority": 80,
+  "theme": {
+    "background": "#EA11101A",
+    "tileBackground": "#FF27213A",
+    "accent": "#FF9999FF",
+    "primaryText": "#FFF7F5FF",
+    "secondaryText": "#FFAAA1C6"
+  },
+  "match": {
+    "processNames": ["Adobe Premiere Pro"]
+  },
+  "pages": [
+    {
+      "id": "edit",
+      "displayName": "Edit",
+      "items": [
+        {
+          "type": "button",
+          "label": "Undo",
+          "width": 82,
+          "action": { "type": "key", "value": "CTRL+Z" }
+        },
+        {
+          "type": "button",
+          "label": "Redo",
+          "width": 82,
+          "action": { "type": "key", "value": "CTRL+SHIFT+Z" }
+        },
+        {
+          "type": "button",
+          "label": "Cut",
+          "width": 76,
+          "action": { "type": "key", "value": "CTRL+K" }
+        },
+        {
+          "type": "button",
+          "label": "Play",
+          "width": 76,
+          "action": { "type": "key", "value": "SPACE" }
+        },
+        {
+          "type": "button",
+          "label": "Prev frame",
+          "width": 105,
+          "action": { "type": "key", "value": "LEFT" }
+        },
+        {
+          "type": "button",
+          "label": "Next frame",
+          "width": 105,
+          "action": { "type": "key", "value": "RIGHT" }
+        }
+      ]
+    },
+    {
+      "id": "audio",
+      "displayName": "Audio",
+      "items": [
+        {
+          "type": "button",
+          "label": "Play/Pause",
+          "width": 110,
+          "action": { "type": "key", "value": "SPACE" }
+        },
+        {
+          "type": "slider",
+          "label": "MASTER VOL",
+          "width": 260,
+          "min": 0,
+          "max": 100,
+          "action": { "type": "volume" }
+        },
+        {
+          "type": "button",
+          "label": "Mute",
+          "width": 80,
+          "action": { "type": "media", "value": "mute" }
+        }
+      ]
+    }
+  ]
+}
